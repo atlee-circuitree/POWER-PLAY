@@ -609,9 +609,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     public void getCenteredNavXValues(){
 
         navx_centered = AHRS.getInstance(hardwareMap.get(NavxMicroNavigationSensor.class, "navx_centered"), AHRS.DeviceDataType.kProcessedData);
-        //boolean connected = navx_device.isConnected();
-        //telemetry.addData("1 navX-Device", connected ?
-        //"Connected" : "Disconnected" );
+        boolean connected = navx_centered.isConnected();
+        telemetry.addData("1 navX-Device", connected ? "Connected" : "Disconnected" );
         String gyrocal, magcal, yaw, pitch, roll, compass_heading;
         String fused_heading, ypr, cf, motion;
         DecimalFormat df = new DecimalFormat("#.##");

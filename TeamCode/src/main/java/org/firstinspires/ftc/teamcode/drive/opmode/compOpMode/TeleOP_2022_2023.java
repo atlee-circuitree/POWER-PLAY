@@ -36,9 +36,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            horizArmPIDLoop();
-            vertArmPIDLoop();
-            angleArmPIDLoop();
+            //horizArmPIDLoop();
+            //vertArmPIDLoop();
+            //angleArmPIDLoop();
 
             double y_stick = gamepad1.left_stick_y;
             double x_stick = gamepad1.left_stick_x;
@@ -122,28 +122,12 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                /*if (gamepad1.x) {
+                if (gamepad1.x) {
                     horizArm.setPower(1);
                 } else if (gamepad1.a) {
                     horizArm.setPower(-1);
                 } else {
                     horizArm.setPower(0);
-                }*/
-
-                if (gamepad1.x) {
-                    horizArmTarget = 1000;
-                }
-
-                if (gamepad1.y) {
-                    horizArmTarget += 100;
-                }
-
-                if (gamepad1.a) {
-                    horizArmTarget = 0;
-                }
-
-                if (gamepad1.b) {
-                    horizArmTarget -= 100;
                 }
 
                 //Opens horizClaw
@@ -165,52 +149,21 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                /*if (gamepad1.right_trigger > .5) {
+                if (gamepad1.right_trigger > .5) {
                     angleArm.setPower(1);
                 } else if (gamepad1.left_trigger > .5) {
                     angleArm.setPower(-1);
                 } else {
                     angleArm.setPower(0);
-                }*/
-
-                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    angleArmTarget = 1000;
                 }
 
-                if (gamepad1.right_bumper) {
-                    angleArmTarget += 100;
-                }
 
-                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    angleArmTarget = 0;
-                }
-
-                if (gamepad1.left_bumper) {
-                    angleArmTarget -= 100;
-                }
-
-                /*if (gamepad2.x) {
+                if (gamepad2.x) {
                     vertArm.setPower(1);
                 } else if (gamepad2.a) {
                     vertArm.setPower(-1);
                 } else {
                     vertArm.setPower(0);
-                }*/
-
-                if (gamepad2.x) {
-                    vertArmTarget = 1000;
-                }
-
-                if (gamepad2.y) {
-                    vertArmTarget += 100;
-                }
-
-                if (gamepad2.a) {
-                    vertArmTarget = 0;
-                }
-
-                if (gamepad2.b) {
-                    vertArmTarget -= 100;
                 }
 
                 //Opens and Closes Transfer Claw
