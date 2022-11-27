@@ -374,7 +374,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     //-1 = Back Position
                     if (transferClawPosition == 1) {
                         transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
-                        vertArmTarget = 1000;
 
 
 
