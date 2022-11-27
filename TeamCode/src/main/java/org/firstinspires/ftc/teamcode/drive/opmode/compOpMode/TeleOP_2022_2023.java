@@ -28,6 +28,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
         GetHardware();
 
         double servoPosition = .5;
+        int transferClawPosition = 0;
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -108,7 +109,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             }
 
             //Test Mode
-            if(testModeV == 1) {
+            if (testModeV == 1) {
 
                 if (gamepad1.left_stick_button) {
                     SD = .25;
@@ -129,6 +130,22 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 } else {
                     horizArm.setPower(0);
                 }
+
+                /*if (gamepad1.x) {
+                    horizArmTarget = 1000;
+                }
+
+                if (gamepad1.y) {
+                    horizArmTarget += 100;
+                }
+
+                if (gamepad1.a) {
+                    horizArmTarget = 0;
+                }
+
+                if (gamepad1.b) {
+                    horizArmTarget -= 100;
+                }*/
 
                 //Opens horizClaw
                 if (gamepad1.dpad_down) {
@@ -157,6 +174,21 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     angleArm.setPower(0);
                 }
 
+                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                    angleArmTarget = 1000;
+                }
+
+                if (gamepad1.right_bumper) {
+                    angleArmTarget += 100;
+                }
+
+                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    angleArmTarget = 0;
+                }
+
+                if (gamepad1.left_bumper) {
+                    angleArmTarget -= 100;
+                }*/
 
                 if (gamepad2.x) {
                     vertArm.setPower(1);
@@ -165,6 +197,22 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 } else {
                     vertArm.setPower(0);
                 }
+
+                /*if (gamepad2.x) {
+                    vertArmTarget = 1000;
+                }
+
+                if (gamepad2.y) {
+                    vertArmTarget += 100;
+                }
+
+                if (gamepad2.a) {
+                    vertArmTarget = 0;
+                }
+
+                if (gamepad2.b) {
+                    vertArmTarget -= 100;
+                }*/
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
@@ -204,7 +252,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     servoPosition += .1;
                 }
 
-                 if (gamepad1.a) {
+                if (gamepad1.a) {
                     servoPosition -= .1;
                 }
 
@@ -263,9 +311,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                if (gamepad1.right_trigger > .5) {
+                if (gamepad1.right_bumper) {
                     angleArm.setPower(1);
-                } else if (gamepad1.left_trigger > .5) {
+                } else if (gamepad1.left_bumper) {
                     angleArm.setPower(-1);
                 } else {
                     angleArm.setPower(0);
@@ -281,33 +329,61 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
-                if (gamepad2.y) {
+                if (gamepad2.dpad_left) {
                     transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                 }
 
                 //Close transfer claw
-                if (gamepad2.b) {
+                if (gamepad2.dpad_right) {
                     transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
                 }
 
                 //Moves transferArmBottom to front
-                if (gamepad2.dpad_up) {
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                if (gamepad2.x) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    if (transferClawPosition == -1) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                    }
                 }
 
-                //Moves transferArmBottom to back
-                if (gamepad2.dpad_down) {
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                if (gamepad2.y) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    if (transferClawPosition == 1) {
+                        transferClawPosition = transferClawPosition - 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition - 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                    }
                 }
+                if (gamepad2.a) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    if (transferClawPosition == 1) {
+                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                        vertArmTarget = 1000;
 
-                //Moves transferArmTop to front
-                if (gamepad2.right_bumper) {
-                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                }
 
-                //Moves transferArmTop to back
-                if (gamepad2.left_bumper) {
-                    transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+
+                        transferClawPosition = transferClawPosition + 1;
+                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    }
                 }
             }
         }
