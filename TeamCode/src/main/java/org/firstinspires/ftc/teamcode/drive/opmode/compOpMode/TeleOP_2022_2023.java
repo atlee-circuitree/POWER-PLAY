@@ -34,12 +34,38 @@ public class TeleOP_2022_2023 extends BaseOpMode {
         waitForStart();
         runtime.reset();
 
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
             //horizArmPIDLoop();
             //vertArmPIDLoop();
             //angleArmPIDLoop();
+
+
+/*
+            //Game Manual zero code
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio, but only when
+            // at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+
+            frontLeft.setPower(frontLeftPower);
+            rearLeft.setPower(backLeftPower);
+            frontRight.setPower(frontRightPower);
+            rearRight.setPower(backRightPower);
+
+
+ */
 
             double y_stick = gamepad1.left_stick_y;
             double x_stick = gamepad1.left_stick_x;
@@ -48,16 +74,18 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             double pi = 3.1415926;
             double gyro_degrees = navx_centered.getYaw();
             double gyro_radians = gyro_degrees * pi/180;
-            double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
-            x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
 
-            /* At this point, Joystick X/Y (strafe/forwrd) vectors have been */
-            /* rotated by the gyro angle, and can be sent to drive system */
+            double y_joystick = -y_stick;
+            //double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
+           // x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
+
+            // At this point, Joystick X/Y (strafe/forwrd) vectors have been
+            // rotated by the gyro angle, and can be sent to drive system
 
             //Mecanum Drive Code
             double r = Math.hypot(x_stick, y_joystick);
             double robotAngle = Math.atan2(y_joystick, x_stick) - Math.PI / 4;
-            double rightX = -gamepad1.right_stick_x;
+            double rightX = gamepad1.right_stick_x;
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
             final double v3 = r * Math.sin(robotAngle) + rightX;
@@ -298,11 +326,11 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Closes horizClaw
-                if (gamepad1.dpad_up) {
+                if (gamepad1.dpad_left) {
                     horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
                 }
 
-                if (gamepad1.dpad_left) {
+                if (gamepad1.dpad_up) {
                     horizClaw.setPosition((HORIZONTAL_CLAW_MIDDLE));
                 }
 
@@ -329,12 +357,12 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
-                if (gamepad2.dpad_left) {
+                if (gamepad2.dpad_right) {
                     transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                 }
 
                 //Close transfer claw
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_left) {
                     transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
                 }
 
