@@ -178,7 +178,8 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         angleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        SetDriveMode(Mode.RUN_WITH_ENCODER);
+      //  SetDriveMode(Mode.RUN_WITH_ENCODER);
+        SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
     }
 
     public void GetIMU() {

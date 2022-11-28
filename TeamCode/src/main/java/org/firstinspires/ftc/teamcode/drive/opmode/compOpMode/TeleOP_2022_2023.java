@@ -48,8 +48,11 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             double pi = 3.1415926;
             double gyro_degrees = navx_centered.getYaw();
             double gyro_radians = gyro_degrees * pi/180;
-            double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
-            x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
+
+            double y_joystick = -y_stick;
+
+          //  double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
+          //  x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
 
             /* At this point, Joystick X/Y (strafe/forwrd) vectors have been */
             /* rotated by the gyro angle, and can be sent to drive system */
@@ -299,11 +302,11 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
                 //Closes horizClaw
                 if (gamepad1.dpad_up) {
-                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    horizClaw.setPosition(HORIZONTAL_CLAW_MIDDLE);
                 }
 
                 if (gamepad1.dpad_left) {
-                    horizClaw.setPosition((HORIZONTAL_CLAW_MIDDLE));
+                    horizClaw.setPosition((HORIZONTAL_CLAW_CLOSE));
                 }
 
                 if (gamepad1.dpad_right) {
@@ -330,12 +333,12 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
                 if (gamepad2.dpad_left) {
-                    transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
                 }
 
                 //Close transfer claw
                 if (gamepad2.dpad_right) {
-                    transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                 }
 
                 //Moves transferArmBottom to front
