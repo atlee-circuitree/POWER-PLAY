@@ -203,19 +203,19 @@ public class ArmPIDTest extends BaseOpMode {
                     angleArmTarget -= 100;
                 }
 
-                if (gamepad2.x) {
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 1000;
                 }
 
-                if (gamepad2.y) {
+                if (gamepad2.right_bumper) {
                     vertArmTarget += 100;
                 }
 
-                if (gamepad2.a) {
+                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 0;
                 }
 
-                if (gamepad2.b) {
+                if (gamepad2.left_bumper) {
                     vertArmTarget -= 100;
                 }
 
@@ -341,19 +341,19 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Moves vertArm
-                if (gamepad2.x) {
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 1000;
                 }
 
-                if (gamepad2.y) {
+                if (gamepad2.right_bumper) {
                     vertArmTarget += 100;
                 }
 
-                if (gamepad2.a) {
+                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 0;
                 }
 
-                if (gamepad2.b) {
+                if (gamepad2.left_bumper) {
                     vertArmTarget -= 100;
                 }
 

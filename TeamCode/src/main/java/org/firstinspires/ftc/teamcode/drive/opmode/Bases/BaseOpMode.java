@@ -72,7 +72,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double TRANSFER_CLAW_OPEN = .8;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
-    public static double TRANSFER_ARM_TOP_FRONT = .45;
+    public static double TRANSFER_ARM_TOP_FRONT = .43;
     public static double TRANSFER_ARM_TOP_CENTER = .22;
     public static double TRANSFER_ARM_TOP_BACK = .2;
     public static double TRANSFER_ARM_BOTTOM_FRONT = .44;

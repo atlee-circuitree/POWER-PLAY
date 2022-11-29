@@ -364,6 +364,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 //Close transfer claw
                 if (gamepad2.dpad_left) {
                     transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    horizClaw.setPosition(HORIZONTAL_CLAW_OPEN);
                 }
 
                 //Moves transferArmBottom to front
