@@ -313,9 +313,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
                 //Extends and Retracts horizArm
                 if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(gamepad1.right_trigger);
+                    horizArm.setPower(1);
                 } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(gamepad1.left_trigger);
+                    horizArm.setPower(-1);
                 } else {
                     horizArm.setPower(0);
                 }
@@ -348,9 +348,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(gamepad2.right_trigger);
+                    vertArm.setPower(1);
                 } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(gamepad2.left_trigger);
+                    vertArm.setPower(-1);
                 } else {
                     vertArm.setPower(0);
                 }
