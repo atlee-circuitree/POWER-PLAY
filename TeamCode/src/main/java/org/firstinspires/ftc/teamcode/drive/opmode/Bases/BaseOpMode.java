@@ -79,9 +79,9 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double TRANSFER_ARM_BOTTOM_CENTER = .55;
     public static double TRANSFER_ARM_BOTTOM_BACK = .66;
 
-    public final double horizArmTicksInDegrees = 384.5; //Arm motor ticks
-    public final double vertArmTicksInDegrees = 384.5; //Arm motor ticks
-    public final double angleArmTicksInDegrees = 384.5; //Arm motor ticks
+    public final double horizArmTicksPerRev = 384.5; //ticks/rev
+    public final double vertArmTicksPerRev = 537.7; //ticks/rev
+    public final double angleArmTicksPerRev = 384.5; //ticks/rev
 
     public final static double ARM_DEFAULT = 0.5; //Unslash this if you want armTurn servo using joystick back (This is for variable turn of a servo)
     public final static double ARM_MIN_RANGE = 0.46;
@@ -218,11 +218,15 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
 
-    public void horizArmPIDLoop() {
+    public int motorEncoderTicksToCm(int ) {
+        horizArmTicksPerRev
+    }
+
+    public void horizArmPIDLoop(double meters) {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), horizArmTarget);
-        double ff = Math.cos(Math.toRadians(horizArmTarget / horizArmTicksInDegrees)) * hF;
+        double ff = Math.cos(Math.toRadians(horizArmTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + ff;
 
@@ -236,7 +240,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
         double pid = vertController.calculate((vertArmPos), vertArmTarget);
-        double ff = Math.cos(Math.toRadians(vertArmTarget / vertArmTicksInDegrees)) * vF;
+        double ff = Math.cos(Math.toRadians(vertArmTarget / vertArmTicksPerRev)) * vF;
 
         double vertArmPower = pid + ff;
 
@@ -250,7 +254,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         angleController.setPID(aP, aI, aD);
         int angleArmPos = vertArm.getCurrentPosition();
         double pid = angleController.calculate((angleArmPos), angleArmTarget);
-        double ff = Math.cos(Math.toRadians(angleArmTarget / angleArmTicksInDegrees)) * aF;
+        double ff = Math.cos(Math.toRadians(angleArmTarget / angleArmTicksPerRev)) * aF;
 
         double angleArmPower = pid + ff;
 
