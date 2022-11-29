@@ -43,7 +43,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             //angleArmPIDLoop();
 
 
-/*
 
           //  double y_stick = -gamepad1.left_stick_y;
           //  double x_stick = gamepad1.left_stick_x;
