@@ -218,11 +218,11 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
 
-    public int motorEncoderTicksToCm(int ) {
+    /*public int motorEncoderTicksToCm(int ) {
         horizArmTicksPerRev
-    }
+    }*/
 
-    public void horizArmPIDLoop(double meters) {
+    public void horizArmPIDLoop() { //do double meters in ()
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), horizArmTarget);
