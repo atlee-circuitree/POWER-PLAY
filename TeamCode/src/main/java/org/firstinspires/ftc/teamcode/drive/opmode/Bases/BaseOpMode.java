@@ -63,7 +63,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vertArmTarget = 0;
     public static int angleArmTarget = 0;
 
-    public static double TRIGGER_THRESHOLD = .5;
+    public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
     public static double HORIZONTAL_CLAW_CLOSE = .85;
@@ -126,6 +126,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         getCenteredNavXValues();
+        GetIMU();
         //Motor and Servo Variables
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
