@@ -59,9 +59,13 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double aP = 0, aI = 0, aD = 0;
     public static double hF = 0, vF = 0, aF = 0;
 
-    public static int horizArmTarget = 0;
-    public static int vertArmTarget = 0;
-    public static int angleArmTarget = 0;
+    public static int horizArmPIDTarget = 0;
+    public static int vertArmPIDTarget = 0;
+    public static int angleArmPIDTarget = 0;
+
+    public static int horizArmEncoderTarget = 0;
+    public static int vertArmEncoderTarget = 0;
+    public static int angleArmEncoderTarget = 0;
 
     public static double TRIGGER_THRESHOLD = 0;
 
@@ -161,8 +165,8 @@ public abstract class BaseOpMode extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         rearRight.setDirection(DcMotor.Direction.REVERSE);
 
-        vertArm.setDirection(DcMotor.Direction.REVERSE);
-        angleArm.setDirection(DcMotor.Direction.REVERSE);
+        vertArm.setDirection(DcMotorEx.Direction.REVERSE);
+        angleArm.setDirection(DcMotorEx.Direction.REVERSE);
 
         SetDriveMode(Mode.STOP_RESET_ENCODER);
 
@@ -171,15 +175,81 @@ public abstract class BaseOpMode extends LinearOpMode {
         rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        horizArm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        vertArm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        angleArm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        horizArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        angleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        horizArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        vertArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        angleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        horizArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        vertArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        angleArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
        // SetDriveMode(Mode.RUN_WITH_ENCODER);
+        SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
+    }
+
+    //Initializes hardware
+    public void GetHardwareEncoder() {
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during the robot configuration
+        // step (using the FTC Robot Controller app on the phone).
+        getCenteredNavXValues();
+        GetIMU();
+        //Motor and Servo Variables
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+
+        horizArm = hardwareMap.get(DcMotorEx.class, "horizArm");
+        vertArm = hardwareMap.get(DcMotorEx.class, "vertArm");
+        angleArm = hardwareMap.get(DcMotorEx.class, "angleArm");
+
+        horizClaw = hardwareMap.get(Servo.class, "horizClaw");
+        transferClaw = hardwareMap.get(Servo.class, "transferClaw");
+        transferArmTop = hardwareMap.get(Servo.class, "transferArmTop");
+        transferArmBotttom = hardwareMap.get(Servo.class, "transferArmBottom");
+
+        servoTest = hardwareMap.get(Servo.class, "servoTest");
+
+        /*LS_distance = hardwareMap.get(DistanceSensor.class, "LS_distance");
+        RS_distance = hardwareMap.get(DistanceSensor.class, "RS_distance");
+        RL_distance = hardwareMap.get(DistanceSensor.class, "RL_distance");
+        RR_distance = hardwareMap.get(DistanceSensor.class, "RR_distance");*/
+
+        horizController = new PIDController(hP, hI, hD);
+        vertController = new PIDController(vP, vI, vD);
+        angleController = new PIDController(aP, aI, aD);
+        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        rearLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        rearRight.setDirection(DcMotor.Direction.REVERSE);
+
+        vertArm.setDirection(DcMotorEx.Direction.REVERSE);
+        angleArm.setDirection(DcMotorEx.Direction.REVERSE);
+
+        SetDriveMode(Mode.STOP_RESET_ENCODER);
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        horizArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        angleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        horizArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        vertArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        angleArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        horizArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        angleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // SetDriveMode(Mode.RUN_WITH_ENCODER);
         SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
     }
 
@@ -223,46 +293,46 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizArmTicksPerRev
     }*/
 
-    public void horizArmPIDLoop() { //do double meters in ()
+    public void horizArmPIDLoop() { //do double cm ()
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
-        double pid = horizController.calculate((horizArmPos), horizArmTarget);
-        double ff = Math.cos(Math.toRadians(horizArmTarget / horizArmTicksPerRev)) * hF;
+        double pid = horizController.calculate((horizArmPos), horizArmPIDTarget);
+        double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + ff;
 
         horizArm.setPower(horizArmPower);
 
         telemetry.addData("Horiz Arm Pos", horizArmPos);
-        telemetry.addData("Horiz Arm Target", horizArmTarget);
+        telemetry.addData("Horiz Arm Target", horizArmPIDTarget);
     }
 
     public void vertArmPIDLoop() {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
-        double pid = vertController.calculate((vertArmPos), vertArmTarget);
-        double ff = Math.cos(Math.toRadians(vertArmTarget / vertArmTicksPerRev)) * vF;
+        double pid = vertController.calculate((vertArmPos), vertArmPIDTarget);
+        double ff = Math.cos(Math.toRadians(vertArmPIDTarget / vertArmTicksPerRev)) * vF;
 
         double vertArmPower = pid + ff;
 
         vertArm.setPower(vertArmPower);
 
         telemetry.addData("Vert Arm Pos", vertArmPos);
-        telemetry.addData("Vert Arm Target", vertArmTarget);
+        telemetry.addData("Vert Arm Target", vertArmPIDTarget);
     }
 
     public void angleArmPIDLoop() {
         angleController.setPID(aP, aI, aD);
         int angleArmPos = vertArm.getCurrentPosition();
-        double pid = angleController.calculate((angleArmPos), angleArmTarget);
-        double ff = Math.cos(Math.toRadians(angleArmTarget / angleArmTicksPerRev)) * aF;
+        double pid = angleController.calculate((angleArmPos), angleArmPIDTarget);
+        double ff = Math.cos(Math.toRadians(angleArmPIDTarget / angleArmTicksPerRev)) * aF;
 
         double angleArmPower = pid + ff;
 
         angleArm.setPower(angleArmPower);
 
         telemetry.addData("Angle Arm Pos", angleArmPos);
-        telemetry.addData("Angle Arm Target", angleArmTarget);
+        telemetry.addData("Angle Arm Target", angleArmPIDTarget);
     }
 
 

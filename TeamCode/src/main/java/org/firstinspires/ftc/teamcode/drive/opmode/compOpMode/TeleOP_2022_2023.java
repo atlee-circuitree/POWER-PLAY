@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
 /**
@@ -110,6 +111,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
             telemetry.addData("Angle Arm Power", angleArm.getPower());
+            telemetry.addData("Horiz Arm Pos", horizArm.getCurrentPosition());
+            telemetry.addData("Vert Arm Pos", vertArm.getCurrentPosition());
+            telemetry.addData("Angle Arm Pos", angleArm.getCurrentPosition());
 
             telemetry.addData("Horiz Claw Position", horizClaw.getPosition());
             telemetry.addData("Transfer Claw", transferClaw.getPosition());
@@ -314,10 +318,10 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(gamepad1.right_trigger);
-                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(-gamepad1.left_trigger);
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() <= 1000) {
+                        horizArm.setPower(gamepad1.right_trigger);
+                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() >= 0) {
+                        horizArm.setPower(-gamepad1.left_trigger);
                 } else {
                     horizArm.setPower(0);
                 }
@@ -341,18 +345,18 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                if (gamepad1.right_bumper) {
-                    angleArm.setPower(1);
-                } else if (gamepad1.left_bumper) {
-                    angleArm.setPower(-1);
+                if (gamepad1.right_bumper && angleArm.getTargetPosition() <= 1000) {
+                        angleArm.setPower(1);
+                } else if (gamepad1.left_bumper && angleArm.getCurrentPosition() >= 0) {
+                        angleArm.setPower(-1);
                 } else {
                     angleArm.setPower(0);
                 }
 
-                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(gamepad2.right_trigger);
-                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(-gamepad2.left_trigger);
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= 1000) {
+                        vertArm.setPower(gamepad2.right_trigger);
+                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() >= 0) {
+                        vertArm.setPower(-gamepad2.left_trigger);
                 } else {
                     vertArm.setPower(0);
                 }
@@ -390,7 +394,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     //1 = Front Position
                     //-1 = Back Position
                     if (transferClawPosition == 1) {
-                        transferClawPosition = transferClawPosition - 1;
+                        transferClawPosition = transferClawPosition + 1;
                         transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
                         transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
                     } else if (transferClawPosition == 0) {

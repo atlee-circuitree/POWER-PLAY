@@ -25,7 +25,7 @@ public class EncoderTest extends BaseOpMode {
 
     public void runOpMode() {
 
-        GetHardware();
+        GetHardwareEncoder();
 
         double servoPosition = .5;
         int transferClawPosition = 0;
@@ -38,49 +38,41 @@ public class EncoderTest extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-/*
-            //Game Manual zero code
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when
-            // at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-
-
-            frontLeft.setPower(frontLeftPower);
-            rearLeft.setPower(backLeftPower);
-            frontRight.setPower(frontRightPower);
-            rearRight.setPower(backRightPower);
-
-
- */
-
-            double y_stick = gamepad1.left_stick_y;
-            double x_stick = gamepad1.left_stick_x;
-
+          //  double y_stick = -gamepad1.left_stick_y;
+          //  double x_stick = gamepad1.left_stick_x;
+            double forward = gamepad1.left_stick_y;
+            double strafe = -gamepad1.left_stick_x;
+            double rightX = -gamepad1.right_stick_x;
             //Field Orientation Code
             double pi = 3.1415926;
-            double gyro_degrees = navx_centered.getYaw();
+            double gyro_degrees = -imu.getAngularOrientation().firstAngle;
             double gyro_radians = gyro_degrees * pi/180;
 
-            double y_joystick = -y_stick;
-            //double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
-            // x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
+            //double y_joystick = -y_stick;
+            //double y_joystick = y_stick * Math.cos(gyro_radians) + x_stick * Math.sin(gyro_radians);
+           // x_stick = -y_stick * Math.sin(gyro_radians) + x_stick * Math.cos(gyro_radians);
+
+            double temp = forward * Math.cos(gyro_radians) +
+                    strafe * Math.sin(gyro_radians);
+            strafe = -forward * Math.sin(gyro_radians) +
+                    strafe * Math.cos(gyro_radians);
+          //  double y_joystick = temp;
+           forward = temp;
 
             // At this point, Joystick X/Y (strafe/forwrd) vectors have been
             // rotated by the gyro angle, and can be sent to drive system
 
             //Mecanum Drive Code
-            double r = Math.hypot(x_stick, y_joystick);
+            frontLeft.setPower((forward + strafe + rightX) * SD);
+            rearLeft.setPower((forward - strafe + rightX) * SD);
+            frontRight.setPower((forward - strafe - rightX) * SD);
+            rearRight.setPower((forward + strafe - rightX) * SD);
+
+
+            /* double r = Math.hypot(x_stick, y_joystick);
             double robotAngle = Math.atan2(y_joystick, x_stick) - Math.PI / 4;
-            double rightX = gamepad1.right_stick_x;
+
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
             final double v3 = r * Math.sin(robotAngle) + rightX;
@@ -91,6 +83,13 @@ public class EncoderTest extends BaseOpMode {
             frontRight.setPower(v2 * SD);
             rearRight.setPower(v4 * SD);
 
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
+*/
+
+
+
             //Show encoder values on the phone
             if (testModeV == 1) {
                 telemetry.addData("Test Mode ", testModeV);
@@ -99,27 +98,17 @@ public class EncoderTest extends BaseOpMode {
             } else {
                 telemetry.addData("Driver Mode ", testModeV);
             }
-            telemetry.addData("Left Dead Encoder", frontLeft.getCurrentPosition());
-            telemetry.addData("Right Dead Encoder", rearRight.getCurrentPosition());
-            telemetry.addData("Rear Dead Encoder", rearLeft.getCurrentPosition());
-
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
             telemetry.addData("Angle Arm Power", angleArm.getPower());
-
-            telemetry.addData("Horiz Arm Power", horizArm.getCurrentPosition());
-            telemetry.addData("Vert Arm Power", vertArm.getCurrentPosition());
-            telemetry.addData("Angle Arm Power", angleArm.getCurrentPosition());
-
-            telemetry.addData("Horiz Claw Position", horizClaw.getPosition());
-            telemetry.addData("Transfer Claw", transferClaw.getPosition());
-            telemetry.addData("Transfer Arm Top", transferArmTop.getPosition());
-            telemetry.addData("Transfer Arm Bottom", transferArmBotttom.getPosition());
-
-            telemetry.addData("NavX Heading", navx_centered.getYaw());
-            telemetry.addData("ServoTest Pos", servoPosition);
+            telemetry.addData("Horiz Arm Pos", horizArm.getCurrentPosition());
+            telemetry.addData("Vert Arm Pos", vertArm.getCurrentPosition());
+            telemetry.addData("Angle Arm Pos", angleArm.getCurrentPosition());
             telemetry.update();
 
+            horizArm.setTargetPosition(horizArmEncoderTarget);
+            vertArm.setTargetPosition(vertArmEncoderTarget);
+            angleArm.setTargetPosition(angleArmEncoderTarget);
 
             //Controller 1 Auto Tele-op
             if (gamepad1.guide && gamepad1.start) { //guide button = mode button
@@ -149,8 +138,16 @@ public class EncoderTest extends BaseOpMode {
                     zeroGyro();
                 }
 
-
+                //Extends and Retracts horizArm
                 if (gamepad1.x) {
+                    horizArm.setPower(1);
+                } else if (gamepad1.a) {
+                    horizArm.setPower(-1);
+                } else {
+                    horizArm.setPower(0);
+                }
+
+                /*if (gamepad1.x) {
                     horizArmTarget = 1000;
                 }
 
@@ -164,7 +161,7 @@ public class EncoderTest extends BaseOpMode {
 
                 if (gamepad1.b) {
                     horizArmTarget -= 100;
-                }
+                }*/
 
                 //Opens horizClaw
                 if (gamepad1.dpad_down) {
@@ -185,8 +182,15 @@ public class EncoderTest extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
+                if (gamepad1.right_trigger > .5) {
+                    angleArm.setPower(1);
+                } else if (gamepad1.left_trigger > .5) {
+                    angleArm.setPower(-1);
+                } else {
+                    angleArm.setPower(0);
+                }
 
-                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
                     angleArmTarget = 1000;
                 }
 
@@ -200,23 +204,31 @@ public class EncoderTest extends BaseOpMode {
 
                 if (gamepad1.left_bumper) {
                     angleArmTarget -= 100;
+                }*/
+
+                if (gamepad2.x) {
+                    vertArm.setPower(1);
+                } else if (gamepad2.a) {
+                    vertArm.setPower(-1);
+                } else {
+                    vertArm.setPower(0);
                 }
 
-                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+                /*if (gamepad2.x) {
                     vertArmTarget = 1000;
                 }
 
-                if (gamepad2.right_bumper) {
+                if (gamepad2.y) {
                     vertArmTarget += 100;
                 }
 
-                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+                if (gamepad2.a) {
                     vertArmTarget = 0;
                 }
 
-                if (gamepad2.left_bumper) {
+                if (gamepad2.b) {
                     vertArmTarget -= 100;
-                }
+                }*/
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
@@ -288,20 +300,20 @@ public class EncoderTest extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                if (gamepad1.x) {
-                    horizArmTarget = 1000;
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                    horizArmEncoderTarget = 1000;
                 }
 
-                if (gamepad1.y) {
-                    horizArmTarget += 100;
+                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    horizArmEncoderTarget = 0;
                 }
 
-                if (gamepad1.a) {
-                    horizArmTarget = 0;
+                if (gamepad1.right_bumper) {
+                    horizArmEncoderTarget += 50;
                 }
 
-                if (gamepad1.b) {
-                    horizArmTarget -= 100;
+                if (gamepad1.left_bumper) {
+                    horizArmEncoderTarget -= 50;
                 }
 
                 //Opens horizClaw
@@ -323,37 +335,44 @@ public class EncoderTest extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-               if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    angleArmTarget = 1000;
+                if (gamepad1.x) {
+                    angleArm.setTargetPosition(angleArmEncoderTarget);
+                    angleArmEncoderTarget = 1000;
                 }
 
-                if (gamepad1.right_bumper) {
-                    angleArmTarget += 100;
+                if (gamepad1.a) {
+                    angleArm.setTargetPosition(angleArmEncoderTarget);
+                    angleArmEncoderTarget = 0;
                 }
 
-                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    angleArmTarget = 0;
+                if (gamepad1.y) {
+                    angleArm.setTargetPosition(angleArmEncoderTarget);
+                    angleArmEncoderTarget += 50;
                 }
 
-                if (gamepad1.left_bumper) {
-                    angleArmTarget -= 100;
+                if (gamepad1.b) {
+                    angleArm.setTargetPosition(angleArmEncoderTarget);
+                    angleArmEncoderTarget -= 50;
                 }
 
-                //Moves vertArm
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArmTarget = 1000;
-                }
-
-                if (gamepad2.right_bumper) {
-                    vertArmTarget += 100;
+                    vertArm.setTargetPosition(vertArmEncoderTarget);
+                    vertArmEncoderTarget = 1000;
                 }
 
                 if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArmTarget = 0;
+                    vertArm.setTargetPosition(vertArmEncoderTarget);
+                    vertArmEncoderTarget = 0;
+                }
+
+                if (gamepad2.right_bumper) {
+                    vertArm.setTargetPosition(vertArmEncoderTarget);
+                    vertArmEncoderTarget += 50;
                 }
 
                 if (gamepad2.left_bumper) {
-                    vertArmTarget -= 100;
+                    vertArm.setTargetPosition(vertArmEncoderTarget);
+                    vertArmEncoderTarget -= 50;
                 }
 
                 //Opens and Closes Transfer Claw
@@ -365,6 +384,7 @@ public class EncoderTest extends BaseOpMode {
                 //Close transfer claw
                 if (gamepad2.dpad_left) {
                     transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    horizClaw.setPosition(HORIZONTAL_CLAW_OPEN);
                 }
 
                 //Moves transferArmBottom to front
