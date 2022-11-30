@@ -296,6 +296,10 @@ public abstract class BaseOpMode extends LinearOpMode {
     /*public int motorEncoderTicksToCm(int ) {
         horizArmTicksPerRev
     }*/
+    
+    public int angleConePos1; {
+        angleArmPIDTarget = 0;
+    }
 
     public void horizArmPIDLoop() { //do double cm ()
         horizController.setPID(hP, hI, hD);
