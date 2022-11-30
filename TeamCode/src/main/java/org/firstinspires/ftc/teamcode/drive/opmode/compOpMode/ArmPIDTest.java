@@ -277,7 +277,7 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad1.y) {
-                    horizArmPIDTarget += 100;
+                    horizArmPIDTarget += 50;
                 }
 
                 if (gamepad1.a) {
@@ -285,7 +285,7 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad1.b) {
-                    horizArmPIDTarget -= 100;
+                    horizArmPIDTarget -= 50;
                 }
 
                 //Opens horizClaw
@@ -312,7 +312,7 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad1.right_bumper) {
-                    angleArmPIDTarget += 100;
+                    angleArmPIDTarget += 50;
                 }
 
                 if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
@@ -320,7 +320,7 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad1.left_bumper) {
-                    angleArmPIDTarget -= 100;
+                    angleArmPIDTarget -= 50;
                 }
 
                 //Moves vertArm
@@ -329,7 +329,7 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad2.right_bumper) {
-                    vertArmPIDTarget += 100;
+                    vertArmPIDTarget += 50;
                 }
 
                 if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
@@ -337,7 +337,7 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad2.left_bumper) {
-                    vertArmPIDTarget -= 100;
+                    vertArmPIDTarget -= 50;
                 }
 
                 //Opens and Closes Transfer Claw
