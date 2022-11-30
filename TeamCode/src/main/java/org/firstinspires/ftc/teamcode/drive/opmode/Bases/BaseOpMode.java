@@ -66,10 +66,10 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
-    public static double HORIZONTAL_CLAW_CLOSE = .85;
+    public static double HORIZONTAL_CLAW_CLOSE = .9;
     public static double HORIZONTAL_CLAW_MIDDLE = .68;
     public static double HORIZONTAL_CLAW_HALF_CLOSE = .74;
-    public static double TRANSFER_CLAW_OPEN = .8;
+    public static double TRANSFER_CLAW_OPEN = .82;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
     public static double TRANSFER_ARM_TOP_FRONT = .43;
