@@ -125,6 +125,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             telemetry.addData("IMU Heading 2: ", imu.getAngularOrientation().secondAngle);
             telemetry.addData("IMU Heading 3: ", imu.getAngularOrientation().thirdAngle);
             telemetry.addData("ServoTest Pos", servoPosition);
+            telemetry.addData("RearLeftSensor", RLdistance);
+            telemetry.addData("RearRightSensor", RRdistance);
+            telemetry.addData("FrontSensor",FrontColor);
             telemetry.update();
 
 
@@ -378,30 +381,30 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                    if (transferClawPosition == -1) {
-                        transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                    } else if (transferClawPosition == 0) {
-                        transferClawPosition = transferClawPosition + 1;
+                   // if (transferClawPosition == -1) {
+                    //    transferClawPosition = transferClawPosition + 1;
+                     //   transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                   //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                  //  } else if (transferClawPosition == 0) {
+                   //     transferClawPosition = transferClawPosition + 1;
                         transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
                         transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                    }
+                  //  }
                 }
 
                 if (gamepad2.y) {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                    if (transferClawPosition == 1) {
-                        transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                    } else if (transferClawPosition == 0) {
-                        transferClawPosition = transferClawPosition - 1;
+                  //  if (transferClawPosition == 1) {
+                    //    transferClawPosition = transferClawPosition - 1;
+                   //     transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                   //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                  //  } else if (transferClawPosition == 0) {
+                  //      transferClawPosition = transferClawPosition - 1;
                         transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
                         transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
-                    }
+                  //  }
                 }
                 if (gamepad2.a) {
                     //0 = Middle Position

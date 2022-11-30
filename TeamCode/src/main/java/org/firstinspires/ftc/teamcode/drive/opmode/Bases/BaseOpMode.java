@@ -8,13 +8,16 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.kauailabs.NavxMicroNavigationSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.kauailabs.navx.ftc.AHRS;
 
@@ -39,13 +42,14 @@ public abstract class BaseOpMode extends LinearOpMode {
     public Servo transferArmTop = null;
     public Servo transferArmBotttom = null;
 
+    public DistanceSensor FrontColor;
+    public DistanceSensor RLdistance;
+    public DistanceSensor RRdistance;
+
     public Servo servoTest = null;
     public int testModeV = 0;
 
-    /*public DistanceSensor LS_distance;
-    public DistanceSensor RS_distance;
-    public DistanceSensor RL_distance;
-    public DistanceSensor RR_distance;*/
+
 
     public double SD = 1;
     public double SA = 1;
@@ -74,10 +78,10 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
-    public static double HORIZONTAL_CLAW_CLOSE = .85;
+    public static double HORIZONTAL_CLAW_CLOSE = .9;
     public static double HORIZONTAL_CLAW_MIDDLE = .68;
     public static double HORIZONTAL_CLAW_HALF_CLOSE = .74;
-    public static double TRANSFER_CLAW_OPEN = .8;
+    public static double TRANSFER_CLAW_OPEN = .82;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
     public static double TRANSFER_ARM_TOP_FRONT = .43;
@@ -152,10 +156,11 @@ public abstract class BaseOpMode extends LinearOpMode {
 
         servoTest = hardwareMap.get(Servo.class, "servoTest");
 
-        /*LS_distance = hardwareMap.get(DistanceSensor.class, "LS_distance");
-        RS_distance = hardwareMap.get(DistanceSensor.class, "RS_distance");
-        RL_distance = hardwareMap.get(DistanceSensor.class, "RL_distance");
-        RR_distance = hardwareMap.get(DistanceSensor.class, "RR_distance");*/
+        FrontColor = hardwareMap.get(DistanceSensor.class, "FrontColor");
+        RLdistance = hardwareMap.get(DistanceSensor.class, "RL_distance");
+        RRdistance = hardwareMap.get(DistanceSensor.class, "RR_distance");
+
+
 
         horizController = new PIDController(hP, hI, hD);
         vertController = new PIDController(vP, vI, vD);
@@ -714,6 +719,31 @@ public abstract class BaseOpMode extends LinearOpMode {
         navx_centered.zeroYaw();
     }
 
+    public void polebumper (double centimeters) {
+        while (RLdistance.getDistance(DistanceUnit.CM) > centimeters && RRdistance.getDistance(DistanceUnit.CM) > centimeters) {
+            frontLeft.setPower(.1);
+            rearLeft.setPower(.1);
+            frontRight.setPower(.1);
+            rearRight.setPower(.1);
+        }
+            frontLeft.setPower(0);
+            rearLeft.setPower(0);
+            frontRight.setPower(0);
+            rearRight.setPower(0);
+
+    }
+    public void Conesensor(double centimeters) {
+        while (FrontColor.getDistance(DistanceUnit.CM) > centimeters) {
+            frontLeft.setPower(.1);
+            rearLeft.setPower(.1);
+            frontRight.setPower(.1);
+            rearRight.setPower(.1);
+        }
+            frontLeft.setPower(0);
+            rearLeft.setPower(0);
+            frontRight.setPower(0);
+            rearRight.setPower(0);
+    }
 
 }
 
