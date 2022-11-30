@@ -301,19 +301,19 @@ public class EncoderTest extends BaseOpMode {
 
                 //Extends and Retracts horizArm
                 if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    horizArmEncoderTarget = 1000;
-                }
-
-                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    horizArmEncoderTarget = 0;
-                }
-
-                if (gamepad1.right_bumper) {
                     horizArmEncoderTarget += 50;
                 }
 
-                if (gamepad1.left_bumper) {
+                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
                     horizArmEncoderTarget -= 50;
+                }
+
+                if (gamepad1.right_bumper) {
+                    horizArmEncoderTarget = 1000;
+                }
+
+                if (gamepad1.left_bumper) {
+                    horizArmEncoderTarget = 0;
                 }
 
                 //Opens horizClaw
@@ -357,22 +357,22 @@ public class EncoderTest extends BaseOpMode {
 
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
                     vertArm.setTargetPosition(vertArmEncoderTarget);
-                    vertArmEncoderTarget = 1000;
+                    vertArmEncoderTarget += 50;
                 }
 
                 if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     vertArm.setTargetPosition(vertArmEncoderTarget);
-                    vertArmEncoderTarget = 0;
+                    vertArmEncoderTarget -= 50;
                 }
 
                 if (gamepad2.right_bumper) {
                     vertArm.setTargetPosition(vertArmEncoderTarget);
-                    vertArmEncoderTarget += 50;
+                    vertArmEncoderTarget = 1000;
                 }
 
                 if (gamepad2.left_bumper) {
                     vertArm.setTargetPosition(vertArmEncoderTarget);
-                    vertArmEncoderTarget -= 50;
+                    vertArmEncoderTarget = 0;
                 }
 
                 //Opens and Closes Transfer Claw
@@ -392,30 +392,32 @@ public class EncoderTest extends BaseOpMode {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                    if (transferClawPosition == -1) {
-                        transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                    } else if (transferClawPosition == 0) {
-                        transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                    }
+                    // if (transferClawPosition == -1) {
+
+                    //     transferClawPosition = transferClawPosition + 1;
+                    //     transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                    //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    // } else if (transferClawPosition == 0) {
+                    //     transferClawPosition = transferClawPosition + 1;
+                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                    // }
                 }
 
                 if (gamepad2.y) {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                    if (transferClawPosition == 1) {
-                        transferClawPosition = transferClawPosition - 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                    } else if (transferClawPosition == 0) {
-                        transferClawPosition = transferClawPosition - 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
-                    }
+
+                    // if (transferClawPosition == 1) {
+                    //     transferClawPosition = transferClawPosition - 1;
+                    //      transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                    //      transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    //  } else if (transferClawPosition == 0) {
+                    //     transferClawPosition = transferClawPosition - 1;
+                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                    transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                    //  }
                 }
                 if (gamepad2.a) {
                     //0 = Middle Position

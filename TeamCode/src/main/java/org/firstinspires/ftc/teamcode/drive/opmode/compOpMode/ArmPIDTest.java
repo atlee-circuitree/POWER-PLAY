@@ -102,6 +102,9 @@ public class ArmPIDTest extends BaseOpMode {
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
             telemetry.addData("Angle Arm Power", angleArm.getPower());
+            telemetry.addData("RearLeftSensor", RLdistance);
+            telemetry.addData("RearRightSensor", RRdistance);
+            //telemetry.addData("FrontSensor",FrontColor);
             telemetry.update();
 
 
@@ -308,36 +311,36 @@ public class ArmPIDTest extends BaseOpMode {
 
                 //Moves angleArm up and down
                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    angleArmPIDTarget = 1000;
-                }
-
-                if (gamepad1.right_bumper) {
                     angleArmPIDTarget += 50;
                 }
 
+                if (gamepad1.right_bumper) {
+                    angleArmPIDTarget = 1000;
+                }
+
                 if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    angleArmPIDTarget = 0;
+                    angleArmPIDTarget -= 50;
                 }
 
                 if (gamepad1.left_bumper) {
-                    angleArmPIDTarget -= 50;
+                    angleArmPIDTarget = 0;
                 }
 
                 //Moves vertArm
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArmPIDTarget = 1000;
-                }
-
-                if (gamepad2.right_bumper) {
                     vertArmPIDTarget += 50;
                 }
 
+                if (gamepad2.right_bumper) {
+                    vertArmPIDTarget = 1000;
+                }
+
                 if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArmPIDTarget = 0;
+                    vertArmPIDTarget -= 50;
                 }
 
                 if (gamepad2.left_bumper) {
-                    vertArmPIDTarget -= 50;
+                    vertArmPIDTarget = 0;
                 }
 
                 //Opens and Closes Transfer Claw
@@ -356,30 +359,32 @@ public class ArmPIDTest extends BaseOpMode {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                    if (transferClawPosition == -1) {
-                        transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                    } else if (transferClawPosition == 0) {
-                        transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                    }
+                    // if (transferClawPosition == -1) {
+
+                    //     transferClawPosition = transferClawPosition + 1;
+                    //     transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                    //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    // } else if (transferClawPosition == 0) {
+                    //     transferClawPosition = transferClawPosition + 1;
+                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                    // }
                 }
 
                 if (gamepad2.y) {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                    if (transferClawPosition == 1) {
-                        transferClawPosition = transferClawPosition - 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                    } else if (transferClawPosition == 0) {
-                        transferClawPosition = transferClawPosition - 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
-                    }
+
+                    // if (transferClawPosition == 1) {
+                    //     transferClawPosition = transferClawPosition - 1;
+                    //      transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                    //      transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    //  } else if (transferClawPosition == 0) {
+                    //     transferClawPosition = transferClawPosition - 1;
+                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                    transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                    //  }
                 }
                 if (gamepad2.a) {
                     //0 = Middle Position

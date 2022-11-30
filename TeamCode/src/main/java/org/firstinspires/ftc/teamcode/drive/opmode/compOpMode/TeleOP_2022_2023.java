@@ -127,7 +127,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             telemetry.addData("ServoTest Pos", servoPosition);
             telemetry.addData("RearLeftSensor", RLdistance);
             telemetry.addData("RearRightSensor", RRdistance);
-            telemetry.addData("FrontSensor",FrontColor);
+            //telemetry.addData("FrontSensor",FrontColor);
             telemetry.update();
 
 

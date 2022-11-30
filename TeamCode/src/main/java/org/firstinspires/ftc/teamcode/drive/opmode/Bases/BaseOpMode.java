@@ -42,7 +42,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public Servo transferArmTop = null;
     public Servo transferArmBotttom = null;
 
-    public DistanceSensor FrontColor;
+    public ColorSensor FrontColor;
     public DistanceSensor RLdistance;
     public DistanceSensor RRdistance;
 
@@ -71,9 +71,9 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vertArmEncoderTarget = 0;
     public static int angleArmEncoderTarget = 0;
 
-    public static int hArmMax = 0;
-    public static int vArmMax = 0;
-    public static int aArmMax = 0;
+    public static int hArmMax = 1000; //in ticks
+    public static int vArmMax = 1000;
+    public static int aArmMax = 1000;
 
     public static double TRIGGER_THRESHOLD = 0;
 
@@ -156,9 +156,9 @@ public abstract class BaseOpMode extends LinearOpMode {
 
         servoTest = hardwareMap.get(Servo.class, "servoTest");
 
-        FrontColor = hardwareMap.get(DistanceSensor.class, "FrontColor");
-        RLdistance = hardwareMap.get(DistanceSensor.class, "RL_distance");
-        RRdistance = hardwareMap.get(DistanceSensor.class, "RR_distance");
+     //  FrontColor = hardwareMap.get(ColorSensor.class, "FrontColor");
+        RLdistance = hardwareMap.get(DistanceSensor.class, "RLdistance");
+        RRdistance = hardwareMap.get(DistanceSensor.class, "RRdistance");
 
 
 
@@ -301,8 +301,24 @@ public abstract class BaseOpMode extends LinearOpMode {
     /*public int motorEncoderTicksToCm(int ) {
         horizArmTicksPerRev
     }*/
-    
-    public int angleConePos1; {
+
+    public void angleConePosLift() {
+        angleArmPIDTarget = 500;
+    }
+
+    public void angleConePosTop() {
+        angleArmPIDTarget = 350;
+    }
+
+    public void angleConePosTopBottom() {
+        angleArmPIDTarget = 300;
+    }
+
+    public void angleConePosBottomTop() {
+        angleArmPIDTarget = 250;
+    }
+
+    public void angleConePosBottom() {
         angleArmPIDTarget = 0;
     }
 
@@ -732,7 +748,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             rearRight.setPower(0);
 
     }
-    public void Conesensor(double centimeters) {
+    /*public void Conesensor(double centimeters) {
         while (FrontColor.getDistance(DistanceUnit.CM) > centimeters) {
             frontLeft.setPower(.1);
             rearLeft.setPower(.1);
@@ -743,7 +759,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             rearLeft.setPower(0);
             frontRight.setPower(0);
             rearRight.setPower(0);
-    }
+    }*/
 
 }
 
