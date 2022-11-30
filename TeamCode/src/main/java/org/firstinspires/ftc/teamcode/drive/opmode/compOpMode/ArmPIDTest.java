@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
@@ -24,6 +25,10 @@ public class ArmPIDTest extends BaseOpMode {
     @Override
 
     public void runOpMode() {
+
+        horizArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        angleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         GetHardware();
 
