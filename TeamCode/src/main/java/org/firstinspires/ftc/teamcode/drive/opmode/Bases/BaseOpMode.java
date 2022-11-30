@@ -67,6 +67,10 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vertArmEncoderTarget = 0;
     public static int angleArmEncoderTarget = 0;
 
+    public static int hArmMax = 0;
+    public static int vArmMax = 0;
+    public static int aArmMax = 0;
+
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;

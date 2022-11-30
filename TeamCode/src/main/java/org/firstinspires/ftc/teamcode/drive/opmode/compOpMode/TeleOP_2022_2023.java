@@ -318,7 +318,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                if (gamepad1.right_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() <= 1000) {
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() <= hArmMax) {
                         horizArm.setPower(gamepad1.right_trigger);
                 } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() >= 0) {
                         horizArm.setPower(-gamepad1.left_trigger);
@@ -345,7 +345,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                if (gamepad1.right_bumper && angleArm.getTargetPosition() <= 1000) {
+                if (gamepad1.right_bumper && angleArm.getTargetPosition() <= aArmMax) {
                         angleArm.setPower(1);
                 } else if (gamepad1.left_bumper && angleArm.getCurrentPosition() >= 0) {
                         angleArm.setPower(-1);
@@ -353,7 +353,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     angleArm.setPower(0);
                 }
 
-                if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= 1000) {
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= vArmMax) {
                         vertArm.setPower(gamepad2.right_trigger);
                 } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() >= 0) {
                         vertArm.setPower(-gamepad2.left_trigger);
