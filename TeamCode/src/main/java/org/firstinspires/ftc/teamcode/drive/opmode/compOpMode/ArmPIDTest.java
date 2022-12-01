@@ -26,9 +26,6 @@ public class ArmPIDTest extends BaseOpMode {
 
     public void runOpMode() {
 
-        horizArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        angleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         GetHardware();
 

@@ -321,10 +321,18 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                if (gamepad1.right_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() <= hArmMax) {
+                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() <= hArmMax) {
                         horizArm.setPower(gamepad1.right_trigger);
                 } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() >= 0) {
                         horizArm.setPower(-gamepad1.left_trigger);
+                } else {
+                    horizArm.setPower(0);
+                }*/
+
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                    horizArm.setPower(gamepad1.right_trigger);
+                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    horizArm.setPower(-gamepad1.left_trigger);
                 } else {
                     horizArm.setPower(0);
                 }
@@ -348,17 +356,33 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                if (gamepad1.right_bumper && angleArm.getTargetPosition() <= aArmMax) {
+                /*if (gamepad1.right_bumper && angleArm.getTargetPosition() <= aArmMax) {
                         angleArm.setPower(1);
                 } else if (gamepad1.left_bumper && angleArm.getCurrentPosition() >= 0) {
                         angleArm.setPower(-1);
                 } else {
                     angleArm.setPower(0);
+                }*/
+
+                if (gamepad1.right_bumper) {
+                    angleArm.setPower(1);
+                } else if (gamepad1.left_bumper) {
+                    angleArm.setPower(-1);
+                } else {
+                    angleArm.setPower(0);
                 }
 
-                if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= vArmMax) {
+                /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= vArmMax) {
                         vertArm.setPower(gamepad2.right_trigger);
                 } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() >= 0) {
+                        vertArm.setPower(-gamepad2.left_trigger);
+                } else {
+                    vertArm.setPower(0);
+                }*/
+
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+                        vertArm.setPower(gamepad2.right_trigger);
+                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                         vertArm.setPower(-gamepad2.left_trigger);
                 } else {
                     vertArm.setPower(0);
@@ -411,6 +435,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 if (gamepad2.a) {
                     //0 = Middle Position
                     //1 = Front Position
+
                     //-1 = Back Position
                     if (transferClawPosition == 1) {
                         transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
