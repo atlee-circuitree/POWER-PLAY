@@ -67,9 +67,9 @@ public abstract class BaseOpMode extends LinearOpMode {
     public PIDController vertController;
     public PIDController angleController;
 
-    public static double hP = 0, hI = 0, hD = 0;
-    public static double vP = 0, vI = 0, vD = 0;
-    public static double aP = 0, aI = 0, aD = 0;
+    public static double hP = 0.001, hI = 0, hD = 0;
+    public static double vP = 0.001, vI = 0, vD = 0;
+    public static double aP = 0.001, aI = 0, aD = 0;
     public static double hF = 0, vF = 0, aF = 0;
 
     public static int horizArmPIDTarget = 0;
