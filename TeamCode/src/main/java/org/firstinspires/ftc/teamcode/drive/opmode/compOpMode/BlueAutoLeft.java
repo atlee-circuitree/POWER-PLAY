@@ -16,11 +16,12 @@ public class BlueAutoLeft extends BaseOpMode {
     public void runOpMode() {
 
         waitForStart();
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        //GetHardware();
 
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        //GetHardware();
         //The coordinates are measured in inches from the center of the robot/odometry wheels
-       //Pose2d startPose = new Pose2d(35, 61.5, Math.toRadians(270));
+        //Pose2d startPose = new Pose2d(35, 61.5, Math.toRadians(270));
 
         if (isStopRequested()) return;
 
@@ -33,8 +34,9 @@ public class BlueAutoLeft extends BaseOpMode {
                 //.splineTo(new Vector2d(36, 8.5), Math.toRadians(195))
                 //.lineToConstantHeading(new Vector2d(34, -1.5))
                 .lineToSplineHeading(new Pose2d(34, 6, Math.toRadians(195)))
-                .forward(1)
-                .back(1.5)
+                .strafeLeft(9)
+                .forward(6)
+                .back(3)
                 .build();
 
         drive.followTrajectorySequence(traj);

@@ -20,7 +20,6 @@ public class Autonomous extends BaseOpMode {
 
         waitForStart();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        GetHardware();
 
         if (SelectedAuto == AutoSide.BLUELEFT) {
             sideDirection = -1;
