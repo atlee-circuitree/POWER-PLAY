@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
-
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -131,7 +131,8 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             telemetry.addData("ServoTest Pos", servoPosition);
             telemetry.addData("RearLeftSensor", RLdistance.getDistance(DistanceUnit.CM));
             telemetry.addData("RearRightSensor", RRdistance.getDistance(DistanceUnit.CM));
-            telemetry.addData("FrontSensor",FrontColor);
+            telemetry.addData("FrontSensor",FrontColor.blue());
+            telemetry.addData("FrontSensor",FrontColor.red());
             telemetry.update();
 
 

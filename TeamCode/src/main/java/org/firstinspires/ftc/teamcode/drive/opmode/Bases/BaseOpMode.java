@@ -668,10 +668,10 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public void polebumper(double centimeters) {
         while (RLdistance.getDistance(DistanceUnit.CM) > centimeters && RRdistance.getDistance(DistanceUnit.CM) > centimeters) {
-            frontLeft.setPower(.1);
-            rearLeft.setPower(.1);
-            frontRight.setPower(.1);
-            rearRight.setPower(.1);
+            frontLeft.setPower(1);
+            rearLeft.setPower(1);
+            frontRight.setPower(1);
+            rearRight.setPower(1);
         }
         frontLeft.setPower(0);
         rearLeft.setPower(0);
