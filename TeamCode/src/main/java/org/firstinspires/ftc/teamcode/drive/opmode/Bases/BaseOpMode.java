@@ -47,6 +47,15 @@ public abstract class BaseOpMode extends LinearOpMode {
     public DistanceSensor RL_distance;
     public DistanceSensor RR_distance;*/
 
+    public enum AutoSide {
+
+        REDLEFT,
+        REDRIGHT,
+        BLUELEFT,
+        BLUERIGHT
+
+    }
+
     public double SD = 1;
     public double SA = 1;
 
