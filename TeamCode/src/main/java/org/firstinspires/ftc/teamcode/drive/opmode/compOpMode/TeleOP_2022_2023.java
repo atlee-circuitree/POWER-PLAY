@@ -162,22 +162,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     horizArm.setPower(0);
                 }
 
-                /*if (gamepad1.x) {
-                    horizArmTarget = 1000;
-                }
-
-                if (gamepad1.y) {
-                    horizArmTarget += 100;
-                }
-
-                if (gamepad1.a) {
-                    horizArmTarget = 0;
-                }
-
-                if (gamepad1.b) {
-                    horizArmTarget -= 100;
-                }*/
-
                 //Opens horizClaw
                 if (gamepad1.dpad_down) {
                     horizClaw.setPosition(HORIZONTAL_CLAW_OPEN);
@@ -205,21 +189,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     angleArm.setPower(0);
                 }
 
-                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    angleArmTarget = 1000;
-                }
-
-                if (gamepad1.right_bumper) {
-                    angleArmTarget += 100;
-                }
-
-                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    angleArmTarget = 0;
-                }
-
-                if (gamepad1.left_bumper) {
-                    angleArmTarget -= 100;
-                }*/
 
                 if (gamepad2.x) {
                     vertArm.setPower(1);
@@ -229,21 +198,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     vertArm.setPower(0);
                 }
 
-                /*if (gamepad2.x) {
-                    vertArmTarget = 1000;
-                }
-
-                if (gamepad2.y) {
-                    vertArmTarget += 100;
-                }
-
-                if (gamepad2.a) {
-                    vertArmTarget = 0;
-                }
-
-                if (gamepad2.b) {
-                    vertArmTarget -= 100;
-                }*/
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
