@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
 /**
@@ -104,9 +105,17 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             } else {
                 telemetry.addData("Driver Mode ", testModeV);
             }
+            telemetry.addData("Red Reading", getFrontColorRedValue());
+            telemetry.addData("Blue Reading", getFrontColorBlueValue());
+            telemetry.addData("Green Reading", getFrontColorGreenValue());
+
             telemetry.addData("Left Dead Encoder", frontLeft.getCurrentPosition());
             telemetry.addData("Right Dead Encoder", rearRight.getCurrentPosition());
             telemetry.addData("Rear Dead Encoder", rearLeft.getCurrentPosition());
+
+            telemetry.addData("HorisArm Pos", horizArm.getCurrentPosition());
+            telemetry.addData("VertArm Pos", vertArm.getCurrentPosition());
+            telemetry.addData("AngleArm Pos", angleArm.getCurrentPosition());
 
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
@@ -119,8 +128,8 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
             telemetry.addData("NavX Heading", navx_centered.getYaw());
             telemetry.addData("ServoTest Pos", servoPosition);
-            telemetry.addData("RearLeftSensor", RLdistance);
-            telemetry.addData("RearRightSensor", RRdistance);
+            telemetry.addData("RearLeftSensor", RLdistance.getDistance(DistanceUnit.CM));
+            telemetry.addData("RearRightSensor", RRdistance.getDistance(DistanceUnit.CM));
             telemetry.addData("FrontSensor",FrontColor);
             telemetry.update();
 
@@ -414,6 +423,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                         transferClawPosition = transferClawPosition + 1;
                         transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                     }
+
                 }
             }
         }
