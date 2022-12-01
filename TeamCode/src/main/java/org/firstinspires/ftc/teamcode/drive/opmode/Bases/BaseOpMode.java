@@ -70,21 +70,47 @@ public abstract class BaseOpMode extends LinearOpMode {
     public PIDController vertController;
     public PIDController angleController;
 
-    public static double hP = 0, hI = 0, hD = 0;
-    public static double vP = 0, vI = 0, vD = 0;
-    public static double aP = 0, aI = 0, aD = 0;
+    public static double hP = 0.001, hI = 0, hD = 0;
+    public static double vP = 0.001, vI = 0, vD = 0;
+    public static double aP = 0.001, aI = 0, aD = 0;
     public static double hF = 0, vF = 0, aF = 0;
 
-    public static int horizArmTarget = 0;
-    public static int vertArmTarget = 0;
-    public static int angleArmTarget = 0;
+    public static int horizArmPIDTarget = 0;
+    public static int vertArmPIDTarget = 0;
+    public static int angleArmPIDTarget = 0;
+
+    public static int horizArmEncoderTarget = 0;
+    public static int vertArmEncoderTarget = 0;
+    public static int angleArmEncoderTarget = 0;
+
+    public static int aArmCone5 = 3578;
+    public static int aArmCone4 = 2778;
+    public static int aArmCone3 = 2475;
+    public static int aArmCone2 = 1986;
+    public static int aArmCone1 = 1561;
+    public static int aArmConeLift = 4378;
+    public static int aArmConeFlat = 1561;
+
+
+    public static int hArmExtend = 2250;
+    public static int hArmRetract = 0;
+
+    public static int vArmHigh = 4173;
+    public static int vArmMid = 2700;
+    public static int vArmLow = 2186;
+    public static int vArmPickup = 378;
+
+    public static int horizArmState = 1;
+    public static int HORIZ_ARM_RETRACTED = 1;
+    public static int HORIZ_ARM_EXTENDING = 2;
+    public static int HORIZ_ARM_EXTENDED = 3;
 
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
     public static double HORIZONTAL_CLAW_CLOSE = .9;
     public static double HORIZONTAL_CLAW_MIDDLE = .68;
-    public static double HORIZONTAL_CLAW_HALF_CLOSE = .74;
+    public static double HORIZONTAL_CLAW_HALF_CLOSE = .7;
     public static double TRANSFER_CLAW_OPEN = .82;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
@@ -177,8 +203,8 @@ public abstract class BaseOpMode extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         rearRight.setDirection(DcMotor.Direction.REVERSE);
 
-        vertArm.setDirection(DcMotor.Direction.REVERSE);
-        angleArm.setDirection(DcMotor.Direction.REVERSE);
+        vertArm.setDirection(DcMotorEx.Direction.REVERSE);
+        angleArm.setDirection(DcMotorEx.Direction.REVERSE);
 
         SetDriveMode(Mode.STOP_RESET_ENCODER);
 
@@ -187,13 +213,13 @@ public abstract class BaseOpMode extends LinearOpMode {
         rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        horizArm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        vertArm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        angleArm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        horizArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        vertArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        angleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        horizArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        vertArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        angleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        horizArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        vertArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        angleArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // SetDriveMode(Mode.RUN_WITH_ENCODER);
         SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
@@ -235,50 +261,117 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
 
-    /*public int motorEncoderTicksToCm(int ) {
-        horizArmTicksPerRev
-    }*/
+    public double cmHorizAngleArm(double cm) { //ticks from horiz and angle arm coverted to cm
 
-    public void horizArmPIDLoop() { //do double meters in ()
+        final double     COUNTS_PER_MOTOR_REV    = 384.5;    // eg: goBilda motor encoder
+        final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
+        final double     COUNTS_PER_CM  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
+
+        return COUNTS_PER_CM * cm;
+
+    }
+
+    public double cmVertARm(double cm) { //ticks from vert arm coverted to cm
+
+        final double     COUNTS_PER_MOTOR_REV    = 537.7;    // eg: goBilda motor encoder
+        final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
+        final double     COUNTS_PER_INCH  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
+
+        return COUNTS_PER_INCH * cm;
+
+    }
+
+    //posTarget is distance you want to put in like the value of hArmExtend
+    //You would put in hArmExtend in posTarget for example when using this function in a tele-op or autonomous
+    public void horizArmPIDLoop(int posTarget) {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
-        double pid = horizController.calculate((horizArmPos), horizArmTarget);
-        double ff = Math.cos(Math.toRadians(horizArmTarget / horizArmTicksPerRev)) * hF;
+        double pid = horizController.calculate((horizArmPos), posTarget);
+        double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + ff;
 
+
         horizArm.setPower(horizArmPower);
 
+
         telemetry.addData("Horiz Arm Pos", horizArmPos);
-        telemetry.addData("Horiz Arm Target", horizArmTarget);
+        telemetry.addData("Horiz Arm Target", posTarget);
     }
 
-    public void vertArmPIDLoop() {
+    //posTarget is distance you want to put in like the value of hArmExtend
+    //You would put in vArmTopHigh in posTarget for example when using this function in a tele-op or autonomous
+    public void vertArmPIDLoop(int posTarget) {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
-        double pid = vertController.calculate((vertArmPos), vertArmTarget);
-        double ff = Math.cos(Math.toRadians(vertArmTarget / vertArmTicksPerRev)) * vF;
+        double pid = vertController.calculate((vertArmPos), posTarget);
+        double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
 
         double vertArmPower = pid + ff;
 
         vertArm.setPower(vertArmPower);
 
         telemetry.addData("Vert Arm Pos", vertArmPos);
-        telemetry.addData("Vert Arm Target", vertArmTarget);
+        telemetry.addData("Vert Arm Target", posTarget);
     }
 
-    public void angleArmPIDLoop() {
+    //posTarget is distance you want to put in like the value of hArmExtend
+    //You would put in aArmCone1 in posTarget for example when using this function in a tele-op or autonomous
+    public void angleArmPIDLoop(int posTarget) {
         angleController.setPID(aP, aI, aD);
-        int angleArmPos = vertArm.getCurrentPosition();
-        double pid = angleController.calculate((angleArmPos), angleArmTarget);
-        double ff = Math.cos(Math.toRadians(angleArmTarget / angleArmTicksPerRev)) * aF;
+        int angleArmPos = angleArm.getCurrentPosition();
+        double pid = angleController.calculate((angleArmPos), posTarget);
+        double ff = Math.cos(Math.toRadians(posTarget / angleArmTicksPerRev)) * aF;
 
         double angleArmPower = pid + ff;
 
         angleArm.setPower(angleArmPower);
 
         telemetry.addData("Angle Arm Pos", angleArmPos);
-        telemetry.addData("Angle Arm Target", angleArmTarget);
+        telemetry.addData("Angle Arm Target", posTarget);
+    }
+
+    //For testing in teleop, don't use for matches
+    public void horizArmPIDLoopTeleOp() {
+        horizController.setPID(hP, hI, hD);
+        int horizArmPos = horizArm.getCurrentPosition();
+        double pid = horizController.calculate((horizArmPos), horizArmPIDTarget);
+        double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
+
+        double horizArmPower = pid + ff;
+
+        horizArm.setPower(horizArmPower);
+
+        telemetry.addData("Horiz Arm Pos", horizArmPos);
+        telemetry.addData("Horiz Arm Target", horizArmPIDTarget);
+    }
+
+    public void vertArmPIDLoopTeleOp() {
+        vertController.setPID(vP, vI, vD);
+        int vertArmPos = vertArm.getCurrentPosition();
+        double pid = vertController.calculate((vertArmPos), vertArmPIDTarget);
+        double ff = Math.cos(Math.toRadians(vertArmPIDTarget / vertArmTicksPerRev)) * vF;
+
+        double vertArmPower = pid + ff;
+
+        vertArm.setPower(vertArmPower);
+
+        telemetry.addData("Vert Arm Pos", vertArmPos);
+        telemetry.addData("Vert Arm Target", vertArmPIDTarget);
+    }
+
+    public void angleArmPIDLoopTeleOp() {
+        angleController.setPID(aP, aI, aD);
+        int angleArmPos = angleArm.getCurrentPosition();
+        double pid = angleController.calculate((angleArmPos), angleArmPIDTarget);
+        double ff = Math.cos(Math.toRadians(angleArmPIDTarget / angleArmTicksPerRev)) * aF;
+
+        double angleArmPower = pid + ff;
+
+        angleArm.setPower(angleArmPower);
+
+        telemetry.addData("Angle Arm Pos", angleArmPos);
+        telemetry.addData("Angle Arm Target", angleArmPIDTarget);
     }
 
 
@@ -681,6 +774,7 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
     }
+
 
 
 
