@@ -51,6 +51,15 @@ public abstract class BaseOpMode extends LinearOpMode {
 
 
 
+    public enum AutoSide {
+
+        REDLEFT,
+        REDRIGHT,
+        BLUELEFT,
+        BLUERIGHT
+
+    }
+
     public double SD = 1;
     public double SA = 1;
 

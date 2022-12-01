@@ -16,36 +16,18 @@ public class RedAutoLeft extends BaseOpMode {
         GetHardware();
 
         //The coordinates are measured in inches from the center of the robot/odometry wheels
-        Pose2d startPose = new Pose2d(35, -60, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-35, -61.5, Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(startPose)
-                .addDisplacementMarker(() -> {
-
+                .forward(61.5)
+                .turn(Math.toRadians(-117))
+                .addDisplacementMarker(1, () -> {
                     //add motor movement
                 })
-                .turn(Math.toRadians(41))
-                .addDisplacementMarker(() -> {
-                    //add motor movement
-                })
-                .waitSeconds(2)
-                .turn(Math.toRadians(-41))
-                .forward(57)
-                .turn(Math.toRadians(-105))
-                .addDisplacementMarker(() -> {
-                    //add motor movement
-                })
-                .waitSeconds(2)
-                .turn(Math.toRadians(-75))
-                .forward(32)
                 .build();
 
-        /*TrajectorySequence traj2 = drive.trajectorySequenceBuilder(traj1)
-                .build();
-
-        drive.turn(Math.toRadians(-41));
-        drive.turn(Math.toRadians(41));
-        drive.followTrajectorySequence(traj1);*/
+        drive.followTrajectorySequence(traj1);
     }
 }
