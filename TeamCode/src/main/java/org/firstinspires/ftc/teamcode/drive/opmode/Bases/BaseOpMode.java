@@ -80,6 +80,19 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vertArmEncoderTarget = 0;
     public static int angleArmEncoderTarget = 0;
 
+    public static int aArmConeLift = 5860;
+    public static int aArmCone5 = 3578;
+    public static int aArmCone4 = 2778;
+    public static int aArmCone3 = 2475;
+    public static int aArmCone2 = 1986;
+    public static int aArmCone1 = 1561;
+    public static int hArmExtend = 2250;
+    public static int hArmRetract = 0;
+    public static int vArmHigh = 4173;
+    public static int vArmMid = 2700;
+    public static int vArmLow = 2186;
+    public static int vArmPickup = 378;
+
     public static int hArmMax = 1000; //in ticks
     public static int vArmMax = 1000;
     public static int aArmMax = 1000;
@@ -89,7 +102,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double HORIZONTAL_CLAW_OPEN = .56;
     public static double HORIZONTAL_CLAW_CLOSE = .9;
     public static double HORIZONTAL_CLAW_MIDDLE = .68;
-    public static double HORIZONTAL_CLAW_HALF_CLOSE = .74;
+    public static double HORIZONTAL_CLAW_HALF_CLOSE = .7;
     public static double TRANSFER_CLAW_OPEN = .82;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
@@ -205,72 +218,6 @@ public abstract class BaseOpMode extends LinearOpMode {
         SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
     }
 
-    //Initializes hardware
-    public void GetHardwareEncoder() {
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        getCenteredNavXValues();
-        GetIMU();
-        //Motor and Servo Variables
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
-
-        horizArm = hardwareMap.get(DcMotorEx.class, "horizArm");
-        vertArm = hardwareMap.get(DcMotorEx.class, "vertArm");
-        angleArm = hardwareMap.get(DcMotorEx.class, "angleArm");
-
-        horizClaw = hardwareMap.get(Servo.class, "horizClaw");
-        transferClaw = hardwareMap.get(Servo.class, "transferClaw");
-        transferArmTop = hardwareMap.get(Servo.class, "transferArmTop");
-        transferArmBotttom = hardwareMap.get(Servo.class, "transferArmBottom");
-
-        servoTest = hardwareMap.get(Servo.class, "servoTest");
-
-        /*LS_distance = hardwareMap.get(DistanceSensor.class, "LS_distance");
-        RS_distance = hardwareMap.get(DistanceSensor.class, "RS_distance");
-        RL_distance = hardwareMap.get(DistanceSensor.class, "RL_distance");
-        RR_distance = hardwareMap.get(DistanceSensor.class, "RR_distance");*/
-
-        horizController = new PIDController(hP, hI, hD);
-        vertController = new PIDController(vP, vI, vD);
-        angleController = new PIDController(aP, aI, aD);
-        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        rearLeft.setDirection(DcMotor.Direction.FORWARD);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        rearRight.setDirection(DcMotor.Direction.REVERSE);
-
-        vertArm.setDirection(DcMotorEx.Direction.REVERSE);
-        angleArm.setDirection(DcMotorEx.Direction.REVERSE);
-
-        SetDriveMode(Mode.STOP_RESET_ENCODER);
-
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        horizArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        vertArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        angleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        horizArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        vertArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        angleArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        horizArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        angleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // SetDriveMode(Mode.RUN_WITH_ENCODER);
-        SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
-    }
-
     public void GetIMU() {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
@@ -307,70 +254,72 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
 
-    /*public int motorEncoderTicksToCm(int ) {
-        horizArmTicksPerRev
-    }*/
+    public double cmHorizAngleArm(double cm) { //ticks from horiz and angle arm coverted to cm
 
-    public void angleConePosLift() {
-        angleArmPIDTarget = 500;
+        final double     COUNTS_PER_MOTOR_REV    = 384.5;    // eg: goBilda motor encoder
+        final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
+        final double     COUNTS_PER_CM  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
+
+        return COUNTS_PER_CM * cm;
+
     }
 
-    public void angleConePosTop() {
-        angleArmPIDTarget = 350;
+    public double cmVertARm(double cm) { //ticks from vert arm coverted to cm
+
+        final double     COUNTS_PER_MOTOR_REV    = 537.7;    // eg: goBilda motor encoder
+        final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
+        final double     COUNTS_PER_INCH  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
+
+        return COUNTS_PER_INCH * cm;
+
     }
 
-    public void angleConePosTopBottom() {
-        angleArmPIDTarget = 300;
-    }
-
-    public void angleConePosBottomTop() {
-        angleArmPIDTarget = 250;
-    }
-
-    public void angleConePosBottom() {
-        angleArmPIDTarget = 0;
-    }
-
-    public void horizArmPIDLoop() { //do double cm ()
+    //posTarget is distance you want to put in like the value of hArmExtend
+    //You would put in hArmExtend in posTarget for example when using this function in a tele-op or autonomous
+    public void horizArmPIDLoop(int posTarget) {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
-        double pid = horizController.calculate((horizArmPos), horizArmPIDTarget);
-        double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
+        double pid = horizController.calculate((horizArmPos), posTarget);
+        double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + ff;
 
         horizArm.setPower(horizArmPower);
 
         telemetry.addData("Horiz Arm Pos", horizArmPos);
-        telemetry.addData("Horiz Arm Target", horizArmPIDTarget);
+        telemetry.addData("Horiz Arm Target", posTarget);
     }
 
-    public void vertArmPIDLoop() {
+    //posTarget is distance you want to put in like the value of hArmExtend
+    //You would put in vArmTopHigh in posTarget for example when using this function in a tele-op or autonomous
+    public void vertArmPIDLoop(int posTarget) {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
-        double pid = vertController.calculate((vertArmPos), vertArmPIDTarget);
-        double ff = Math.cos(Math.toRadians(vertArmPIDTarget / vertArmTicksPerRev)) * vF;
+        double pid = vertController.calculate((vertArmPos), posTarget);
+        double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
 
         double vertArmPower = pid + ff;
 
         vertArm.setPower(vertArmPower);
 
         telemetry.addData("Vert Arm Pos", vertArmPos);
-        telemetry.addData("Vert Arm Target", vertArmPIDTarget);
+        telemetry.addData("Vert Arm Target", posTarget);
     }
 
-    public void angleArmPIDLoop() {
+    //posTarget is distance you want to put in like the value of hArmExtend
+    //You would put in aArmCone1 in posTarget for example when using this function in a tele-op or autonomous
+    public void angleArmPIDLoop(int posTarget) {
         angleController.setPID(aP, aI, aD);
         int angleArmPos = vertArm.getCurrentPosition();
-        double pid = angleController.calculate((angleArmPos), angleArmPIDTarget);
-        double ff = Math.cos(Math.toRadians(angleArmPIDTarget / angleArmTicksPerRev)) * aF;
+        double pid = angleController.calculate((angleArmPos), posTarget);
+        double ff = Math.cos(Math.toRadians(posTarget / angleArmTicksPerRev)) * aF;
 
         double angleArmPower = pid + ff;
 
         angleArm.setPower(angleArmPower);
 
         telemetry.addData("Angle Arm Pos", angleArmPos);
-        telemetry.addData("Angle Arm Target", angleArmPIDTarget);
+        telemetry.addData("Angle Arm Target", posTarget);
     }
 
 

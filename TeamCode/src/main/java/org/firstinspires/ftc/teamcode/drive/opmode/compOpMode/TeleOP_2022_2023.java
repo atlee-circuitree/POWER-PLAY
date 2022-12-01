@@ -105,9 +105,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
             telemetry.addData("Angle Arm Power", angleArm.getPower());
-            telemetry.addData("Horiz Arm Encoder Pos", horizArm.getPower());
-            telemetry.addData("Vert Arm Encoder Pos", vertArm.getPower());
-            telemetry.addData("Angle Arm Encoder Pos", angleArm.getPower());
+            telemetry.addData("Horiz Arm Encoder Pos", horizArm.getCurrentPosition());
+            telemetry.addData("Vert Arm Encoder Pos", vertArm.getCurrentPosition());
+            telemetry.addData("Angle Arm Encoder Pos", angleArm.getCurrentPosition());
 
             telemetry.addData("Horiz Claw Position", horizClaw.getPosition());
             telemetry.addData("Transfer Claw", transferClaw.getPosition());

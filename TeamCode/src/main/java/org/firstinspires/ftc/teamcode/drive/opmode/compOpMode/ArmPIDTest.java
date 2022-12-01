@@ -40,9 +40,9 @@ public class ArmPIDTest extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            horizArmPIDLoop();
-            vertArmPIDLoop();
-            angleArmPIDLoop();
+            //horizArmPIDLoop();
+            //vertArmPIDLoop();
+            //angleArmPIDLoop();
 
             //  double y_stick = -gamepad1.left_stick_y;
             //  double x_stick = gamepad1.left_stick_x;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
@@ -19,13 +20,14 @@ import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
  */
 
 @Config
+@Disabled
 @TeleOp(name="Encoder Test", group="Linear Opmode")
 public class EncoderTest extends BaseOpMode {
     @Override
 
     public void runOpMode() {
 
-        GetHardwareEncoder();
+        //GetHardwareEncoder();
 
         double servoPosition = .5;
         int transferClawPosition = 0;
