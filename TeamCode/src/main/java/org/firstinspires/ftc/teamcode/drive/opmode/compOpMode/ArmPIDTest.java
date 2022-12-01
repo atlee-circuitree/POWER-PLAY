@@ -40,9 +40,9 @@ public class ArmPIDTest extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //horizArmPIDLoop();
-            //vertArmPIDLoop();
-            //angleArmPIDLoop();
+            horizArmPIDLoopTeleOp();
+            vertArmPIDLoopTeleOp();
+            angleArmPIDLoopTeleOp();
 
             //  double y_stick = -gamepad1.left_stick_y;
             //  double x_stick = gamepad1.left_stick_x;
@@ -237,7 +237,6 @@ public class ArmPIDTest extends BaseOpMode {
                 if (gamepad2.left_bumper) {
                     transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
                 }
-
             }
             //Servo Test Mode
             if (testModeV == 2) {
@@ -277,20 +276,14 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
+                //Extend
                 if (gamepad1.x) {
-                    horizArmPIDTarget = 1000;
+                    horizArmPIDTarget = 2250;
                 }
 
-                if (gamepad1.y) {
-                    horizArmPIDTarget += 50;
-                }
-
+                //Retract
                 if (gamepad1.a) {
                     horizArmPIDTarget = 0;
-                }
-
-                if (gamepad1.b) {
-                    horizArmPIDTarget -= 50;
                 }
 
                 //Opens horizClaw
@@ -312,37 +305,50 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-               if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    angleArmPIDTarget += 50;
+                //Cone 5
+                if (gamepad1.y) {
+                    angleArmPIDTarget = 3578;
                 }
 
+                //Cone 4
                 if (gamepad1.right_bumper) {
-                    angleArmPIDTarget = 1000;
+                    angleArmPIDTarget = 2778;
                 }
 
-                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    angleArmPIDTarget -= 50;
-                }
-
+                //Cone 3
                 if (gamepad1.left_bumper) {
-                    angleArmPIDTarget = 0;
+                    angleArmPIDTarget = 2475;
+                }
+
+                //Cone 2
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                    angleArmPIDTarget = 1986;
+                }
+
+                //Cone 1
+                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    angleArmPIDTarget -= 1561;
                 }
 
                 //Moves vertArm
+                //High pole
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArmPIDTarget += 50;
+                    vertArmPIDTarget = 4173;
                 }
 
-                if (gamepad2.right_bumper) {
-                    vertArmPIDTarget = 1000;
-                }
-
+                //Mid pole
                 if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArmPIDTarget -= 50;
+                    vertArmPIDTarget = 2700;
                 }
 
+                //Low pole
+                if (gamepad2.right_bumper) {
+                    vertArmPIDTarget = 2186;
+                }
+
+                //Cone pickup
                 if (gamepad2.left_bumper) {
-                    vertArmPIDTarget = 0;
+                    vertArmPIDTarget = 378;
                 }
 
                 //Opens and Closes Transfer Claw
