@@ -38,12 +38,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //horizArmPIDLoop();
-            //vertArmPIDLoop();
-            //angleArmPIDLoop();
-
-
-
           //  double y_stick = -gamepad1.left_stick_y;
           //  double x_stick = gamepad1.left_stick_x;
             double forward = gamepad1.left_stick_y;
@@ -103,13 +97,16 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             } else {
                 telemetry.addData("Driver Mode ", testModeV);
             }
-            telemetry.addData("Left Dead Encoder", frontLeft.getCurrentPosition());
-            telemetry.addData("Right Dead Encoder", rearRight.getCurrentPosition());
-            telemetry.addData("Rear Dead Encoder", rearLeft.getCurrentPosition());
+            telemetry.addData("Left Dead Encoder Pos", frontLeft.getCurrentPosition());
+            telemetry.addData("Right Dead Encoder Pos", rearRight.getCurrentPosition());
+            telemetry.addData("Rear Dead Encoder Pos", rearLeft.getCurrentPosition());
 
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
             telemetry.addData("Angle Arm Power", angleArm.getPower());
+            telemetry.addData("Horiz Arm Encoder Pos", horizArm.getPower());
+            telemetry.addData("Vert Arm Encoder Pos", vertArm.getPower());
+            telemetry.addData("Angle Arm Encoder Pos", angleArm.getPower());
 
             telemetry.addData("Horiz Claw Position", horizClaw.getPosition());
             telemetry.addData("Transfer Claw", transferClaw.getPosition());
