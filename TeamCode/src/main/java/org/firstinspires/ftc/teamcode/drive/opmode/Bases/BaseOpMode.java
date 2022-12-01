@@ -54,6 +54,15 @@ public abstract class BaseOpMode extends LinearOpMode {
     public int testModeV = 0;
 
 
+    public enum AutoSide {
+
+        REDLEFT,
+        REDRIGHT,
+        BLUELEFT,
+        BLUERIGHT
+
+    }
+
     public double SD = 1;
     public double SA = 1;
 
@@ -70,7 +79,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vertArmTarget = 0;
     public static int angleArmTarget = 0;
 
-    public static double TRIGGER_THRESHOLD = .5;
+    public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
     public static double HORIZONTAL_CLAW_CLOSE = .9;
@@ -79,16 +88,16 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static double TRANSFER_CLAW_OPEN = .82;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
-    public static double TRANSFER_ARM_TOP_FRONT = .45;
+    public static double TRANSFER_ARM_TOP_FRONT = .43;
     public static double TRANSFER_ARM_TOP_CENTER = .22;
     public static double TRANSFER_ARM_TOP_BACK = .2;
     public static double TRANSFER_ARM_BOTTOM_FRONT = .44;
     public static double TRANSFER_ARM_BOTTOM_CENTER = .55;
     public static double TRANSFER_ARM_BOTTOM_BACK = .66;
 
-    public final double horizArmTicksInDegrees = 384.5; //Arm motor ticks
-    public final double vertArmTicksInDegrees = 384.5; //Arm motor ticks
-    public final double angleArmTicksInDegrees = 384.5; //Arm motor ticks
+    public final double horizArmTicksPerRev = 384.5; //ticks/rev
+    public final double vertArmTicksPerRev = 537.7; //ticks/rev
+    public final double angleArmTicksPerRev = 384.5; //ticks/rev
 
     public final static double ARM_DEFAULT = 0.5; //Unslash this if you want armTurn servo using joystick back (This is for variable turn of a servo)
     public final static double ARM_MIN_RANGE = 0.46;
@@ -133,6 +142,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         getCenteredNavXValues();
+        GetIMU();
         //Motor and Servo Variables
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
@@ -225,11 +235,15 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
 
-    public void horizArmPIDLoop() {
+    /*public int motorEncoderTicksToCm(int ) {
+        horizArmTicksPerRev
+    }*/
+
+    public void horizArmPIDLoop() { //do double meters in ()
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), horizArmTarget);
-        double ff = Math.cos(Math.toRadians(horizArmTarget / horizArmTicksInDegrees)) * hF;
+        double ff = Math.cos(Math.toRadians(horizArmTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + ff;
 
@@ -243,7 +257,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
         double pid = vertController.calculate((vertArmPos), vertArmTarget);
-        double ff = Math.cos(Math.toRadians(vertArmTarget / vertArmTicksInDegrees)) * vF;
+        double ff = Math.cos(Math.toRadians(vertArmTarget / vertArmTicksPerRev)) * vF;
 
         double vertArmPower = pid + ff;
 
@@ -257,7 +271,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         angleController.setPID(aP, aI, aD);
         int angleArmPos = vertArm.getCurrentPosition();
         double pid = angleController.calculate((angleArmPos), angleArmTarget);
-        double ff = Math.cos(Math.toRadians(angleArmTarget / angleArmTicksInDegrees)) * aF;
+        double ff = Math.cos(Math.toRadians(angleArmTarget / angleArmTicksPerRev)) * aF;
 
         double angleArmPower = pid + ff;
 

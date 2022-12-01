@@ -28,10 +28,12 @@ public class ArmPIDTest extends BaseOpMode {
         GetHardware();
 
         double servoPosition = .5;
+        int transferClawPosition = 0;
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -40,6 +42,31 @@ public class ArmPIDTest extends BaseOpMode {
             vertArmPIDLoop();
             angleArmPIDLoop();
 
+
+/*
+            //Game Manual zero code
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio, but only when
+            // at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+
+            frontLeft.setPower(frontLeftPower);
+            rearLeft.setPower(backLeftPower);
+            frontRight.setPower(frontRightPower);
+            rearRight.setPower(backRightPower);
+
+
+ */
+
             double y_stick = gamepad1.left_stick_y;
             double x_stick = gamepad1.left_stick_x;
 
@@ -47,16 +74,18 @@ public class ArmPIDTest extends BaseOpMode {
             double pi = 3.1415926;
             double gyro_degrees = navx_centered.getYaw();
             double gyro_radians = gyro_degrees * pi/180;
-            double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
-            x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
 
-            /* At this point, Joystick X/Y (strafe/forwrd) vectors have been */
-            /* rotated by the gyro angle, and can be sent to drive system */
+            double y_joystick = -y_stick;
+            //double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
+            // x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
+
+            // At this point, Joystick X/Y (strafe/forwrd) vectors have been
+            // rotated by the gyro angle, and can be sent to drive system
 
             //Mecanum Drive Code
             double r = Math.hypot(x_stick, y_joystick);
             double robotAngle = Math.atan2(y_joystick, x_stick) - Math.PI / 4;
-            double rightX = -gamepad1.right_stick_x;
+            double rightX = gamepad1.right_stick_x;
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
             final double v3 = r * Math.sin(robotAngle) + rightX;
@@ -108,7 +137,7 @@ public class ArmPIDTest extends BaseOpMode {
             }
 
             //Test Mode
-            if(testModeV == 1) {
+            if (testModeV == 1) {
 
                 if (gamepad1.left_stick_button) {
                     SD = .25;
@@ -121,14 +150,6 @@ public class ArmPIDTest extends BaseOpMode {
                     zeroGyro();
                 }
 
-                //Extends and Retracts horizArm
-                /*if (gamepad1.x) {
-                    horizArm.setPower(1);
-                } else if (gamepad1.a) {
-                    horizArm.setPower(-1);
-                } else {
-                    horizArm.setPower(0);
-                }*/
 
                 if (gamepad1.x) {
                     horizArmTarget = 1000;
@@ -165,13 +186,6 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                /*if (gamepad1.right_trigger > .5) {
-                    angleArm.setPower(1);
-                } else if (gamepad1.left_trigger > .5) {
-                    angleArm.setPower(-1);
-                } else {
-                    angleArm.setPower(0);
-                }*/
 
                 if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
                     angleArmTarget = 1000;
@@ -189,27 +203,19 @@ public class ArmPIDTest extends BaseOpMode {
                     angleArmTarget -= 100;
                 }
 
-                /*if (gamepad2.x) {
-                    vertArm.setPower(1);
-                } else if (gamepad2.a) {
-                    vertArm.setPower(-1);
-                } else {
-                    vertArm.setPower(0);
-                }*/
-
-                if (gamepad2.x) {
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 1000;
                 }
 
-                if (gamepad2.y) {
+                if (gamepad2.right_bumper) {
                     vertArmTarget += 100;
                 }
 
-                if (gamepad2.a) {
+                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 0;
                 }
 
-                if (gamepad2.b) {
+                if (gamepad2.left_bumper) {
                     vertArmTarget -= 100;
                 }
 
@@ -251,7 +257,7 @@ public class ArmPIDTest extends BaseOpMode {
                     servoPosition += .1;
                 }
 
-                 if (gamepad1.a) {
+                if (gamepad1.a) {
                     servoPosition -= .1;
                 }
 
@@ -283,13 +289,21 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(1);
-                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(-1);
-                } else {
-                    horizArm.setPower(0);
-                }*/
+                if (gamepad1.x) {
+                    horizArmTarget = 1000;
+                }
+
+                if (gamepad1.y) {
+                    horizArmTarget += 100;
+                }
+
+                if (gamepad1.a) {
+                    horizArmTarget = 0;
+                }
+
+                if (gamepad1.b) {
+                    horizArmTarget -= 100;
+                }
 
                 //Opens horizClaw
                 if (gamepad1.dpad_down) {
@@ -297,11 +311,11 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Closes horizClaw
-                if (gamepad1.dpad_up) {
+                if (gamepad1.dpad_left) {
                     horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
                 }
 
-                if (gamepad1.dpad_left) {
+                if (gamepad1.dpad_up) {
                     horizClaw.setPosition((HORIZONTAL_CLAW_MIDDLE));
                 }
 
@@ -310,51 +324,95 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                /*if (gamepad1.right_trigger > .5) {
-                    angleArm.setPower(1);
-                } else if (gamepad1.left_trigger > .5) {
-                    angleArm.setPower(-1);
-                } else {
-                    angleArm.setPower(0);
-                }*/
+               if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                    angleArmTarget = 1000;
+                }
 
-                /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(1);
-                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(-1);
-                } else {
-                    vertArm.setPower(0);
-                }*/
+                if (gamepad1.right_bumper) {
+                    angleArmTarget += 100;
+                }
+
+                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    angleArmTarget = 0;
+                }
+
+                if (gamepad1.left_bumper) {
+                    angleArmTarget -= 100;
+                }
+
+                //Moves vertArm
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+                    vertArmTarget = 1000;
+                }
+
+                if (gamepad2.right_bumper) {
+                    vertArmTarget += 100;
+                }
+
+                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+                    vertArmTarget = 0;
+                }
+
+                if (gamepad2.left_bumper) {
+                    vertArmTarget -= 100;
+                }
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
-                if (gamepad2.dpad_left) {
+                if (gamepad2.dpad_right) {
                     transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                 }
 
                 //Close transfer claw
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_left) {
                     transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
                 }
 
                 //Moves transferArmBottom to front
-                if (gamepad2.dpad_up) {
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                if (gamepad2.x) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    if (transferClawPosition == -1) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                    }
                 }
 
-                //Moves transferArmBottom to back
-                if (gamepad2.dpad_down) {
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                if (gamepad2.y) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    if (transferClawPosition == 1) {
+                        transferClawPosition = transferClawPosition - 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition - 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                    }
                 }
+                if (gamepad2.a) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    if (transferClawPosition == 1) {
+                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
 
-                //Moves transferArmTop to front
-                if (gamepad2.right_bumper) {
-                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                }
 
-                //Moves transferArmTop to back
-                if (gamepad2.left_bumper) {
-                    transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+
+                        transferClawPosition = transferClawPosition + 1;
+                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    }
                 }
             }
         }

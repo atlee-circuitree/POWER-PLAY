@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
 /**
@@ -20,8 +19,8 @@ import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
  */
 
 @Config
-@TeleOp(name="TeleOp 2022-2023", group="Linear Opmode")
-public class TeleOP_2022_2023 extends BaseOpMode {
+@TeleOp(name="Encoder Test", group="Linear Opmode")
+public class EncoderTest extends BaseOpMode {
     @Override
 
     public void runOpMode() {
@@ -39,40 +38,49 @@ public class TeleOP_2022_2023 extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-          //  double y_stick = -gamepad1.left_stick_y;
-          //  double x_stick = gamepad1.left_stick_x;
-            double forward = gamepad1.left_stick_y;
-            double strafe = -gamepad1.left_stick_x;
-            double rightX = -gamepad1.right_stick_x;
+/*
+            //Game Manual zero code
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio, but only when
+            // at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+
+            frontLeft.setPower(frontLeftPower);
+            rearLeft.setPower(backLeftPower);
+            frontRight.setPower(frontRightPower);
+            rearRight.setPower(backRightPower);
+
+
+ */
+
+            double y_stick = gamepad1.left_stick_y;
+            double x_stick = gamepad1.left_stick_x;
+
             //Field Orientation Code
             double pi = 3.1415926;
-            double gyro_degrees = -imu.getAngularOrientation().firstAngle;
+            double gyro_degrees = navx_centered.getYaw();
             double gyro_radians = gyro_degrees * pi/180;
 
-            //double y_joystick = -y_stick;
-            //double y_joystick = y_stick * Math.cos(gyro_radians) + x_stick * Math.sin(gyro_radians);
-           // x_stick = -y_stick * Math.sin(gyro_radians) + x_stick * Math.cos(gyro_radians);
-
-            double temp = forward * Math.cos(gyro_radians) +
-                    strafe * Math.sin(gyro_radians);
-            strafe = -forward * Math.sin(gyro_radians) +
-                    strafe * Math.cos(gyro_radians);
-          //  double y_joystick = temp;
-           forward = temp;
+            double y_joystick = -y_stick;
+            //double y_joystick = y_stick * Math.cos(gyro_radians) + -x_stick * Math.sin(gyro_radians);
+            // x_stick = -y_stick * Math.sin(gyro_radians) + -x_stick * Math.cos(gyro_radians);
 
             // At this point, Joystick X/Y (strafe/forwrd) vectors have been
             // rotated by the gyro angle, and can be sent to drive system
 
             //Mecanum Drive Code
-            frontLeft.setPower((forward + strafe + rightX) * SD);
-            rearLeft.setPower((forward - strafe + rightX) * SD);
-            frontRight.setPower((forward - strafe - rightX) * SD);
-            rearRight.setPower((forward + strafe - rightX) * SD);
-
-
-            /* double r = Math.hypot(x_stick, y_joystick);
+            double r = Math.hypot(x_stick, y_joystick);
             double robotAngle = Math.atan2(y_joystick, x_stick) - Math.PI / 4;
-
+            double rightX = gamepad1.right_stick_x;
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
             final double v3 = r * Math.sin(robotAngle) + rightX;
@@ -83,13 +91,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             frontRight.setPower(v2 * SD);
             rearRight.setPower(v4 * SD);
 
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-*/
-
-
-
             //Show encoder values on the phone
             if (testModeV == 1) {
                 telemetry.addData("Test Mode ", testModeV);
@@ -98,26 +99,17 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             } else {
                 telemetry.addData("Driver Mode ", testModeV);
             }
-
-            telemetry.addData("Red Reading", getFrontColorRedValue());
-            telemetry.addData("Blue Reading", getFrontColorBlueValue());
-            telemetry.addData("Green Reading", getFrontColorGreenValue());
-
-            telemetry.addData("Left Dead Encoder Pos", frontLeft.getCurrentPosition());
-            telemetry.addData("Right Dead Encoder Pos", rearRight.getCurrentPosition());
-            telemetry.addData("Rear Dead Encoder Pos", rearLeft.getCurrentPosition());
-
-
-            telemetry.addData("HorisArm Pos", horizArm.getCurrentPosition());
-            telemetry.addData("VertArm Pos", vertArm.getCurrentPosition());
-            telemetry.addData("AngleArm Pos", angleArm.getCurrentPosition());
+            telemetry.addData("Left Dead Encoder", frontLeft.getCurrentPosition());
+            telemetry.addData("Right Dead Encoder", rearRight.getCurrentPosition());
+            telemetry.addData("Rear Dead Encoder", rearLeft.getCurrentPosition());
 
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
             telemetry.addData("Angle Arm Power", angleArm.getPower());
-            telemetry.addData("Horiz Arm Encoder Pos", horizArm.getPower());
-            telemetry.addData("Vert Arm Encoder Pos", vertArm.getPower());
-            telemetry.addData("Angle Arm Encoder Pos", angleArm.getPower());
+
+            telemetry.addData("Horiz Arm Power", horizArm.getCurrentPosition());
+            telemetry.addData("Vert Arm Power", vertArm.getCurrentPosition());
+            telemetry.addData("Angle Arm Power", angleArm.getCurrentPosition());
 
             telemetry.addData("Horiz Claw Position", horizClaw.getPosition());
             telemetry.addData("Transfer Claw", transferClaw.getPosition());
@@ -125,13 +117,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             telemetry.addData("Transfer Arm Bottom", transferArmBotttom.getPosition());
 
             telemetry.addData("NavX Heading", navx_centered.getYaw());
-            telemetry.addData("IMU Heading 1: ", imu.getAngularOrientation().firstAngle);
-            telemetry.addData("IMU Heading 2: ", imu.getAngularOrientation().secondAngle);
-            telemetry.addData("IMU Heading 3: ", imu.getAngularOrientation().thirdAngle);
             telemetry.addData("ServoTest Pos", servoPosition);
-            telemetry.addData("RearLeftSensor", RLdistance.getDistance(DistanceUnit.CM));
-            telemetry.addData("RearRightSensor", RRdistance.getDistance(DistanceUnit.CM));
-            telemetry.addData("FrontSensor",FrontColor);
             telemetry.update();
 
 
@@ -163,16 +149,8 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     zeroGyro();
                 }
 
-                //Extends and Retracts horizArm
-                if (gamepad1.x) {
-                    horizArm.setPower(1);
-                } else if (gamepad1.a) {
-                    horizArm.setPower(-1);
-                } else {
-                    horizArm.setPower(0);
-                }
 
-                /*if (gamepad1.x) {
+                if (gamepad1.x) {
                     horizArmTarget = 1000;
                 }
 
@@ -186,7 +164,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
                 if (gamepad1.b) {
                     horizArmTarget -= 100;
-                }*/
+                }
 
                 //Opens horizClaw
                 if (gamepad1.dpad_down) {
@@ -207,15 +185,8 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                if (gamepad1.right_trigger > .5) {
-                    angleArm.setPower(1);
-                } else if (gamepad1.left_trigger > .5) {
-                    angleArm.setPower(-1);
-                } else {
-                    angleArm.setPower(0);
-                }
 
-                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
                     angleArmTarget = 1000;
                 }
 
@@ -229,31 +200,23 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
                 if (gamepad1.left_bumper) {
                     angleArmTarget -= 100;
-                }*/
-
-                if (gamepad2.x) {
-                    vertArm.setPower(1);
-                } else if (gamepad2.a) {
-                    vertArm.setPower(-1);
-                } else {
-                    vertArm.setPower(0);
                 }
 
-                /*if (gamepad2.x) {
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 1000;
                 }
 
-                if (gamepad2.y) {
+                if (gamepad2.right_bumper) {
                     vertArmTarget += 100;
                 }
 
-                if (gamepad2.a) {
+                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     vertArmTarget = 0;
                 }
 
-                if (gamepad2.b) {
+                if (gamepad2.left_bumper) {
                     vertArmTarget -= 100;
-                }*/
+                }
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
@@ -290,19 +253,19 @@ public class TeleOP_2022_2023 extends BaseOpMode {
             //Servo Test Mode
             if (testModeV == 2) {
                 if (gamepad1.x) {
-                    servoPosition -= .1;
-                }
-
-                if (gamepad1.y) {
                     servoPosition += .1;
                 }
 
                 if (gamepad1.a) {
-                    servoPosition -= .01;
+                    servoPosition -= .1;
+                }
+
+                if (gamepad1.y) {
+                    servoPosition += .01;
                 }
 
                 if (gamepad1.b) {
-                    servoPosition += .01;
+                    servoPosition -= .01;
                 }
 
                 if (gamepad1.dpad_down) {
@@ -325,12 +288,20 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Extends and Retracts horizArm
-                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(gamepad1.right_trigger);
-                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(-gamepad1.left_trigger);
-                } else {
-                    horizArm.setPower(0);
+                if (gamepad1.x) {
+                    horizArmTarget = 1000;
+                }
+
+                if (gamepad1.y) {
+                    horizArmTarget += 100;
+                }
+
+                if (gamepad1.a) {
+                    horizArmTarget = 0;
+                }
+
+                if (gamepad1.b) {
+                    horizArmTarget -= 100;
                 }
 
                 //Opens horizClaw
@@ -352,20 +323,37 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 //Moves angleArm up and down
-                if (gamepad1.right_bumper) {
-                    angleArm.setPower(1);
-                } else if (gamepad1.left_bumper) {
-                    angleArm.setPower(-1);
-                } else {
-                    angleArm.setPower(0);
+               if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                    angleArmTarget = 1000;
                 }
 
+                if (gamepad1.right_bumper) {
+                    angleArmTarget += 100;
+                }
+
+                if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    angleArmTarget = 0;
+                }
+
+                if (gamepad1.left_bumper) {
+                    angleArmTarget -= 100;
+                }
+
+                //Moves vertArm
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(gamepad2.right_trigger);
-                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArm.setPower(-gamepad2.left_trigger);
-                } else {
-                    vertArm.setPower(0);
+                    vertArmTarget = 1000;
+                }
+
+                if (gamepad2.right_bumper) {
+                    vertArmTarget += 100;
+                }
+
+                if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+                    vertArmTarget = 0;
+                }
+
+                if (gamepad2.left_bumper) {
+                    vertArmTarget -= 100;
                 }
 
                 //Opens and Closes Transfer Claw
@@ -377,7 +365,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 //Close transfer claw
                 if (gamepad2.dpad_left) {
                     transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
-                    horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
                 }
 
                 //Moves transferArmBottom to front
@@ -385,41 +372,30 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-                   // if (transferClawPosition == -1) {
-
-
+                    if (transferClawPosition == -1) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition + 1;
                         transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
                         transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                  //  }
-
-                   //     transferClawPosition = transferClawPosition + 1;
-                   //     transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                   //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                   // } else if (transferClawPosition == 0) {
-                   //     transferClawPosition = transferClawPosition + 1;
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                   // }
-
+                    }
                 }
 
                 if (gamepad2.y) {
                     //0 = Middle Position
                     //1 = Front Position
                     //-1 = Back Position
-
-
-
-                   // if (transferClawPosition == 1) {
-                   //     transferClawPosition = transferClawPosition - 1;
-                  //      transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
-                  //      transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
-                  //  } else if (transferClawPosition == 0) {
-                   //     transferClawPosition = transferClawPosition - 1;
-
+                    if (transferClawPosition == 1) {
+                        transferClawPosition = transferClawPosition - 1;
+                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                        transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition - 1;
                         transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
                         transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
-                  //  }
+                    }
                 }
                 if (gamepad2.a) {
                     //0 = Middle Position
@@ -436,7 +412,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                         transferClawPosition = transferClawPosition + 1;
                         transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                     }
-
                 }
             }
         }
