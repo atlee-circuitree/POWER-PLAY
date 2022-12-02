@@ -16,21 +16,21 @@ public class AutonomousArmPIDTest extends BaseOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-
-            if (horizArmState == HORIZ_ARM_EXTENDING) {
-                if (horizencoder() == horizencoder target) {
-                    horizArmState = HORIZ_ARM_EXTENDED;
-                } else{
-                    horizArmPIDLoop(hArmExtend);
-                }
-            }
-            if (angleArmState == ANGLE_ARM_EXTENDING) {
-                if (horizencoder() == horizencoder target) {
-                    horizArmState = ANGLE_ARM_EXTENDED;
-                } else{
-                    horizArmPIDLoop(hArmExtend);
-                }
-            }
+// was using master and this was red
+           // if (horizArmState == HORIZ_ARM_EXTENDING) {
+            //    if (horizencoder() == horizencoder target) {
+            //        horizArmState = HORIZ_ARM_EXTENDED;
+            //    } else{
+             //       horizArmPIDLoop(hArmExtend);
+             //   }
+          //  }
+           // if (angleArmState == ANGLE_ARM_EXTENDING) {
+              //  if (horizencoder() == horizencoder target) {
+             //       horizArmState = ANGLE_ARM_EXTENDED;
+             //   } else{
+             //       horizArmPIDLoop(hArmExtend);
+             //   }
+           // }
 
 
 
