@@ -187,9 +187,12 @@ public class AutoLeft extends BaseOpMode {
                     .build();
             drive.followTrajectorySequence(trajStart);
 
+            //put arm movements here
+
         if ((Side == Left && SelectedLane == Lane1) || (Side == Right && SelectedLane == Lane3)) {
         Trajectory traj1 = drive.trajectoryBuilder(trajStart.end())
-                .lineTo(new Vector2d(Side * 67, 16))
+                //.lineTo(new Vector2d(Side * 67, 16)) went too far and hit 5 stack cones
+                .lineTo(new Vector2d(Side * 57, 10))
                 .build();
 
         drive.followTrajectory(traj1);

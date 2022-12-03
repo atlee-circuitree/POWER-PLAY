@@ -35,6 +35,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
         waitForStart();
         runtime.reset();
 
+        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -365,7 +366,6 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     //vertArm.setPower(-gamepad2.left_trigger);
                     behavior = BEHAVIOR_RETRACT_VERT_ARM_TO_MAX;
-
                 }
                 //else {
                 //    vertArm.setPower(0);
@@ -400,15 +400,16 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     // }
                 }
 
+                //Moves transferArm to back
                 if (gamepad2.y) {
-                    //0 = Middle Position
-                    //1 = Front Position
-                    //-1 = Back Position
                     behavior = BEHAVIOR_TRANSFER_CONE;
-
-
-                    //  }
                 }
+
+                //Returns transferArm to front
+                if (gamepad2.b) {
+                    behavior = BEHAVIOR_TRANSFER_RETURN;
+                }
+
                 if (gamepad2.a) {
                     //0 = Middle Position
                     //1 = Front Position
@@ -442,7 +443,17 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                // }
                 //Behaviors
                 if (behavior == BEHAVIOR_TRANSFER_CONE) {
+                    //lower vert to cone
+                    //close transfer claw
+                    //open horiz claw
+                    //wait till servos finished
+                    //raise vert
+                    //wait til vArmLow finished
+                    //raise vert
+                    //flip transfer arm and wrist
+                    //lower onto pole
                     if (behaviorStep == 1) {
+                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
                         vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
                         if (vertArmState == VERT_ARM_RETRACTED) {
                             behaviorStep = 2;
@@ -468,32 +479,59 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                             behavior = BEHAVIOR_FINISHED;
                             behaviorStep = 1;
                         }
-
-
-                        //lower vert to cone
-                        //close transfer claw
-                        //open horiz claw
-                        //wait till servos finished
-                        //raise vert
-                        //wait til vArmLow finished
-                        //raise vert
-                        //flip transfer arm and wrist
-                        //lower onto pole
-
                     }
                 }
+                if (behavior == BEHAVIOR_TRANSFER_RETURN) {
+                    //Move vertArm down on high pole
+                    //Open transfer claw
+                    //Move vertArm max height
+                    //Move transferArm and wrist to front
+                    //Move vertArm to low pole/pickup level
+                    if (behaviorStep == 1) {  // ArmHigh - vArmPoleInsert seems to mess up going to pickup position
+                        vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmHigh , ENCODER_ERROR_THRESHOLD);
+                        if (vertArmState == VERT_ARM_RETRACTED) {
+                            behaviorStep = 2;
+                        }
+                    }
+                    if (behaviorStep == 2) {
+                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                        horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
+                        horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                        vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+
+                        // wait(.1); //Don't be evil
+                        behaviorStep = 3;
+                    }
+                    if (behaviorStep == 3) {
+                        vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                        if (vertArm.getCurrentPosition() > vArmPoleSafe)
+                            behaviorStep = 4;
+                    }
+                }
+                if (behaviorStep == 4) {
+                    vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmLow, ENCODER_ERROR_THRESHOLD);
+                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                    if (vertArmState == VERT_ARM_RETRACTED) {
+                        behavior = BEHAVIOR_FINISHED;
+                        behaviorStep = 1;
+                    }
+                }
+
+
+
                 if (behavior == BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX) {
                     horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
                 }
                 if (behavior == BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX) {
-                    horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
                 }
 
                 if (behavior == BEHAVIOR_EXTEND_VERT_ARM_TO_MAX) {
                     vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
                 }
                 if (behavior == BEHAVIOR_RETRACT_VERT_ARM_TO_MAX) {
-                    vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmPickup, ENCODER_ERROR_THRESHOLD);
+                    vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
                 }
 
 
