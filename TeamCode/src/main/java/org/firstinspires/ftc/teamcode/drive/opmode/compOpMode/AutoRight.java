@@ -4,16 +4,24 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.OpenCV.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.openftc.apriltag.AprilTagDetection;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name ="Blue Auto Right", group = "drive")
-public class BlueAutoRight extends BaseOpMode {
+import java.util.ArrayList;
+
+@Autonomous(name ="Auto Right", group = "drive")
+public class AutoRight extends BaseOpMode {
     @Override
     public void runOpMode() {
 
-        waitForStart();
+       // waitForStart();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -39,4 +47,5 @@ public class BlueAutoRight extends BaseOpMode {
         drive.followTrajectorySequence(traj);
 
     }
+
 }

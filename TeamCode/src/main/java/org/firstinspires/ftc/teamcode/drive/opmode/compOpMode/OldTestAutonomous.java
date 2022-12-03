@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name ="Autonomous", group = "drive")
-public class Autonomous extends BaseOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name ="OldTestAutonomous", group = "drive")
+public class OldTestAutonomous extends BaseOpMode {
     @Override
     public void runOpMode() {
 
