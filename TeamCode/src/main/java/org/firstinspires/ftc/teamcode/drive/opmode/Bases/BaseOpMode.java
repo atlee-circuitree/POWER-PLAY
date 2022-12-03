@@ -740,7 +740,8 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
     public void zeroGyro() {
-        navx_centered.zeroYaw();
+        //navx_centered.zeroYaw();
+        GetIMU();
     }
 
     public void polebumper (double centimeters) {
