@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
+@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name ="AutonomousPIDTest", group = "drive")
 public class AutonomousArmPIDTest extends BaseOpMode {
     @Override

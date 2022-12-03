@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.Bases;
 
+import static android.icu.lang.UProperty.MATH;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -87,27 +88,62 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int aArmCone1 = 1561;
     public static int aArmConeLift = 4378;
     public static int aArmConeFlat = 1561;
+    public static int angleArmOffset = 0;
 
 
     public static int hArmExtend = 2250;
-    public static int hArmRetract = 0;
+    public static int hArmRetract = 38;
 
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
     public static int vArmPickup = 378;
+   // public static int vArmPickup = 400;
 
+    public int behavior;
+    public static int behaviorStep = 1;
+    public int vArmTarget = 0;
+
+    public static int HORIZ_ARM_STOP = 0;
     public static int horizArmState = 1;
     public static int HORIZ_ARM_RETRACTED = 1;
-    public static int HORIZ_ARM_EXTENDING = 2;
-    public static int HORIZ_ARM_EXTENDED = 3;
+    public static int HORIZ_ARM_RETRACTING = 2;
+    public static int HORIZ_ARM_EXTENDING = 3;
+    public static int HORIZ_ARM_EXTENDED = 4;
+
+    public static int vertArmState = 1;
+    public static int VERT_ARM_STOP = 0;
+    public static int VERT_ARM_RETRACTED = 1;
+    public static int VERT_ARM_RETRACTING = 2;
+    public static int VERT_ARM_EXTENDING = 3;
+    public static int VERT_ARM_EXTENDED = 4;
+
+    public static int angleArmState = 1;
+    public static int ANGLE_ARM_STOP = 0;
+    public static int ANGLE_ARM_RETRACTED = 1;
+    public static int ANGLE_ARM_RETRACTING = 2;
+    public static int ANGLE_ARM_EXTENDING = 3;
+    public static int ANGLE_ARM_EXTENDED = 4;
+
+    public static int BEHAVIOR_FINISHED = 0;
+    public static int BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX = 1;
+    public static int BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX = 2;
+    public static int BEHAVIOR_EXTEND_VERT_ARM_TO_MAX = 3;
+    public static int BEHAVIOR_RETRACT_VERT_ARM_TO_MAX = 4 ;
+    public static int BEHAVIOR_TRANSFER_CONE = 5;
+    public static int BEHAVIOR_GET_CONE1 = 6;
+    public static int BEHAVIOR_GET_CONE2 = 7;
+    public static int BEHAVIOR_GET_CONE3 = 8;
+    public static int BEHAVIOR_GET_CONE4 = 9;
+    public static int BEHAVIOR_GET_CONE5 = 10;
+    public int coneStackHeight = 5;
 
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
     public static double HORIZONTAL_CLAW_CLOSE = .9;
     public static double HORIZONTAL_CLAW_MIDDLE = .68;
-    public static double HORIZONTAL_CLAW_HALF_CLOSE = .7;
+    public static double HORIZONTAL_CLAW_HALF_CLOSE = .72;
     public static double TRANSFER_CLAW_OPEN = .82;
     public static double TRANSFER_CLAW_CLOSE = .75;
 
@@ -125,6 +161,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public final static double ARM_DEFAULT = 0.5; //Unslash this if you want armTurn servo using joystick back (This is for variable turn of a servo)
     public final static double ARM_MIN_RANGE = 0.46;
     public final static double ARM_MAX_RANGE = 0.53;
+    public static int ENCODER_ERROR_THRESHOLD = 10;
 
     public AHRS navx_centered;
 
@@ -372,6 +409,67 @@ public abstract class BaseOpMode extends LinearOpMode {
         telemetry.addData("Angle Arm Target", angleArmPIDTarget);
     }
 
+    public int horizArmMech(int horizArmState, int horizArmTarget, int ENCODER_ERROR_THRESHOLD) {
+        if (horizArmState == HORIZ_ARM_EXTENDING) {
+            if (Math.abs(horizArm.getCurrentPosition() - horizArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                horizArmState = HORIZ_ARM_EXTENDED;
+            } else {
+                horizArmPIDLoop(horizArmTarget);
+            }
+        }
+        if (horizArmState == HORIZ_ARM_RETRACTING) {
+            if (Math.abs(horizArm.getCurrentPosition() - horizArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                horizArmState = HORIZ_ARM_RETRACTED;
+            } else {
+                horizArmPIDLoop(horizArmTarget);
+            }
+        }
+        if (horizArmState == HORIZ_ARM_STOP) {
+            horizArm.setPower(0);
+        }
+        return horizArmState;
+    }
+    public int vertArmMech(int vertArmState, int vertArmTarget, int ENCODER_ERROR_THRESHOLD) {
+        if (vertArmState == VERT_ARM_EXTENDING) {
+            if (Math.abs(vertArm.getCurrentPosition() - vertArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                vertArmState = VERT_ARM_EXTENDED;
+            } else {
+                vertArmPIDLoop(vertArmTarget);
+            }
+        }
+        if (vertArmState == VERT_ARM_RETRACTING) {
+            if (Math.abs(vertArm.getCurrentPosition() - vertArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                vertArmState = VERT_ARM_RETRACTED;
+            } else {
+                vertArmPIDLoop(vertArmTarget);
+            }
+        }
+        if (vertArmState == VERT_ARM_STOP) {
+            vertArm.setPower(0);
+        }
+        return vertArmState;
+    }
+
+    public int angleArmMech(int angleArmState, int angleArmTarget, int ENCODER_ERROR_THRESHOLD) {
+        if (angleArmState == ANGLE_ARM_EXTENDING) {
+            if (Math.abs(angleArm.getCurrentPosition() - (angleArmTarget + angleArmOffset)) <= ENCODER_ERROR_THRESHOLD) {
+                angleArmState = ANGLE_ARM_EXTENDED;
+            } else {
+                angleArmPIDLoop(angleArmTarget);
+            }
+        }
+        if (angleArmState == ANGLE_ARM_RETRACTING) {
+            if (Math.abs(angleArm.getCurrentPosition() - (angleArmTarget + angleArmOffset)) <= ENCODER_ERROR_THRESHOLD) {
+                angleArmState = ANGLE_ARM_RETRACTED;
+            } else {
+                angleArmPIDLoop(angleArmTarget);
+            }
+        }
+        if (angleArmState == ANGLE_ARM_STOP) {
+            angleArm.setPower(0);
+        }
+        return angleArmState;
+    }
 
 
 /*
