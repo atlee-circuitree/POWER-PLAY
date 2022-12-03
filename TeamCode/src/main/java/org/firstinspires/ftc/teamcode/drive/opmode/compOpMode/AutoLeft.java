@@ -206,8 +206,8 @@ public class AutoLeft extends BaseOpMode {
 
         if ((Side == Left && SelectedLane == Lane3) || (Side == Right && SelectedLane == Lane1)) {
             TrajectorySequence traj3 = drive.trajectorySequenceBuilder(trajStart.end())
-                    .lineTo(new Vector2d(Side * 38, 14))
-                    .lineTo(new Vector2d(Side * 10, 16))
+                    .lineTo(new Vector2d(Side * 38, 13))
+                    .lineTo(new Vector2d(Side * 11, 13))
                     .turn(Side * Math.toRadians(-15))
                     .build();
 
