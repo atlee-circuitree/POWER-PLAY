@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.Bases;
 
+import static android.icu.lang.UProperty.MATH;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -95,12 +97,31 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
-    public static int vArmPickup = 378;
+    //  public static int vArmPickup = 378;
+    public static int vArmPickup = 400;
 
-    public static int horizArmState = 1;
+    public int horizArmState = 1;
+    public int behavior;
+    public int behaviorStep = 0;
+    public int vArmTarget = 0;
+
+    public static int BEHAVIOR_FINISHED = 0;
+    public static int BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX = 1;
+    public static int BEHAVIOR_TRANSFER_CONE = 2;
+
+    public static int HORIZ_ARM_STOP = 0;
     public static int HORIZ_ARM_RETRACTED = 1;
-    public static int HORIZ_ARM_EXTENDING = 2;
-    public static int HORIZ_ARM_EXTENDED = 3;
+    public static int HORIZ_ARM_RETRACTING = 2;
+    public static int HORIZ_ARM_EXTENDING = 3;
+    public static int HORIZ_ARM_EXTENDED = 4;
+
+    public static int vertArmState = 1;
+    public static int VERT_ARM_STOP = 0;
+    public static int VERT_ARM_RETRACTED = 1;
+    public static int VERT_ARM_RETRACTING = 2;
+    public static int VERT_ARM_EXTENDING = 3;
+    public static int VERT_ARM_EXTENDED = 4;
+
 
     public static double TRIGGER_THRESHOLD = 0;
 
@@ -126,6 +147,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public final static double ARM_MIN_RANGE = 0.46;
     public final static double ARM_MAX_RANGE = 0.53;
 
+    public static int ENCODER_ERROR_THRESHOLD = 10;
     public AHRS navx_centered;
 
     ModernRoboticsI2cGyro gyro    = null;                    // Additional Gyro device
@@ -372,7 +394,56 @@ public abstract class BaseOpMode extends LinearOpMode {
         telemetry.addData("Angle Arm Target", angleArmPIDTarget);
     }
 
-
+    //public int moveToTarget(DcMotor currentMotor, int encoderTarget, int ENCODER_ERROR_THRESHOLD) {
+    //    telemetry.addData("CurrentMotor Position", currentMotor.getCurrentPosition());
+    //    telemetry.addData("CurrentMotor Target", encoderTarget);
+    //    if (Math.abs(currentMotor.getCurrentPosition() - encoderTarget) >= ENCODER_ERROR_THRESHOLD) {
+    //        currentMotor.setPower(1 * SD);
+    //    } else {
+    //        currentMotor.setPower(0);
+    //    }
+    //    return
+    //}
+    public int horizArmMech(int horizArmState, int horizArmTarget, int ENCODER_ERROR_THRESHOLD) {
+        if (horizArmState == HORIZ_ARM_EXTENDING) {
+            if (Math.abs(horizArm.getCurrentPosition() - horizArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                horizArmState = HORIZ_ARM_EXTENDED;
+            } else {
+                horizArmPIDLoop(horizArmTarget);
+            }
+        }
+        if (horizArmState == HORIZ_ARM_RETRACTING) {
+            if (Math.abs(horizArm.getCurrentPosition() - horizArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                horizArmState = HORIZ_ARM_RETRACTED;
+            } else {
+                horizArmPIDLoop(horizArmTarget);
+            }
+        }
+        if (horizArmState == HORIZ_ARM_STOP) {
+           horizArm.setPower(0);
+        }
+        return horizArmState;
+    }
+    public int vertArmMech(int vertArmState, int vertArmTarget, int ENCODER_ERROR_THRESHOLD) {
+        if (vertArmState == VERT_ARM_EXTENDING) {
+            if (Math.abs(vertArm.getCurrentPosition() - vertArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                vertArmState = VERT_ARM_EXTENDED;
+            } else {
+                vertArmPIDLoop(vertArmTarget);
+            }
+        }
+        if (vertArmState == VERT_ARM_RETRACTING) {
+            if (Math.abs(vertArm.getCurrentPosition() - vertArmTarget) <= ENCODER_ERROR_THRESHOLD) {
+                vertArmState = VERT_ARM_RETRACTED;
+            } else {
+                vertArmPIDLoop(vertArmTarget);
+            }
+        }
+        if (vertArmState == VERT_ARM_STOP) {
+            vertArm.setPower(0);
+        }
+        return vertArmState;
+    }
 
 /*
     public void getGyro() {
@@ -740,7 +811,8 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
     public void zeroGyro() {
-        navx_centered.zeroYaw();
+        //navx_centered.zeroYaw();
+        GetIMU();
     }
 
     public void polebumper (double centimeters) {

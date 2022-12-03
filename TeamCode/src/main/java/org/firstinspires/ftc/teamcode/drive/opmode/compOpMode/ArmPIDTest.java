@@ -40,7 +40,7 @@ public class ArmPIDTest extends BaseOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            horizArmPIDLoopTeleOp();
+            horizArmPIDLoop(horizArmPIDTarget);
             vertArmPIDLoopTeleOp();
             angleArmPIDLoopTeleOp();
 

@@ -36,12 +36,12 @@ public class AutonomousArmPIDTest extends BaseOpMode {
 
         }
 
-        vertArmPIDLoop(vArmLow);
+     //   vertArmPIDLoop(vArmLow);
 
-        angleArmPIDLoop(aArmCone5);
+       // angleArmPIDLoop(aArmCone5);
 
         horizArmPIDLoop(hArmExtend);
-
+/*
         transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
         transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
 
@@ -64,6 +64,6 @@ public class AutonomousArmPIDTest extends BaseOpMode {
         transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
 
         transferClaw.setPosition(TRANSFER_CLAW_OPEN);
-
+*/
     }
 }
