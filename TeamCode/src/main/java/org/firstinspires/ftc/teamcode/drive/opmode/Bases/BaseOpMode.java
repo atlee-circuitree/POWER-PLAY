@@ -242,10 +242,10 @@ public abstract class BaseOpMode extends LinearOpMode {
         telemetry.update();
 
         // make sure the imu gyro is calibrated before continuing.
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            sleep(50);
-            idle();
-        }
+       // while (!isStopRequested() && !imu.isGyroCalibrated()) {
+        //    sleep(50);
+        //    idle();
+       // }
         telemetry.addData("IMU", "calibrated");
         telemetry.update();
     }
@@ -740,7 +740,8 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
     public void zeroGyro() {
-        navx_centered.zeroYaw();
+       // navx_centered.zeroYaw();
+        GetIMU();
     }
 
     public void polebumper (double centimeters) {
