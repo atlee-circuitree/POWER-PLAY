@@ -54,7 +54,7 @@ public class AutoLeft extends BaseOpMode {
 
 
 
-        int SelectedLane = 1;
+        int SelectedLane = 3;
         int Lane1 = 1;
         int Lane2 = 2;
         int Lane3 = 3;
@@ -190,17 +190,25 @@ public class AutoLeft extends BaseOpMode {
             //put arm movements here
 
         if ((Side == Left && SelectedLane == Lane1) || (Side == Right && SelectedLane == Lane3)) {
-        Trajectory traj1 = drive.trajectoryBuilder(trajStart.end())
-                //.lineTo(new Vector2d(Side * 67, 16)) went too far and hit 5 stack cones
-                .lineTo(new Vector2d(Side * 57, 10))
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(trajStart.end())
+                //.lineTo(new Vector2d(Side * 67, 16)) went too far and hit 5 stack cones'
+                //changed x: to 62, not getting all the way in lane
+              //  .lineTo(new Vector2d(Side * 62, 10))
+                //.lineTo(new Vector2d(Side * 57, 10))
+               // .turn(Side * Math.toRadians(-20))
+                //.lineTo(new Vector2d(Side *
+                .lineToSplineHeading(new Pose2d(Side * 36, 36, Math.toRadians(270 - (0 * Side))))
+                .lineToSplineHeading(new Pose2d(Side * 62, 36, Math.toRadians(270 - (0 * Side))))
                 .build();
 
-        drive.followTrajectory(traj1);
+       // drive.followTrajectory(traj1);
+            drive.followTrajectorySequence(traj1);
         }
 
         if (SelectedLane == Lane2) {
             Trajectory traj2 = drive.trajectoryBuilder(trajStart.end())
-                    .lineTo(new Vector2d(Side * 37, 20))
+                    //.lineTo(new Vector2d(Side * 37, 20))
+                    .lineToSplineHeading(new Pose2d(Side * 36, 36, Math.toRadians(270 - (0 * Side))))
                     .build();
 
             drive.followTrajectory(traj2);
@@ -208,10 +216,13 @@ public class AutoLeft extends BaseOpMode {
 
         if ((Side == Left && SelectedLane == Lane3) || (Side == Right && SelectedLane == Lane1)) {
             TrajectorySequence traj3 = drive.trajectorySequenceBuilder(trajStart.end())
-                    .lineTo(new Vector2d(Side * 38, 13))
-                    .lineTo(new Vector2d(Side * 11, 13))
-                    .turn(Side * Math.toRadians(-15))
+                 //   .lineTo(new Vector2d(Side * 38, 13))
+                 //   .lineTo(new Vector2d(Side * 11, 13))
+                 //   .turn(Side * Math.toRadians(-15))
+                    .lineToSplineHeading(new Pose2d(Side * 36, 36, Math.toRadians(270 - (0 * Side))))
+                    .lineToSplineHeading(new Pose2d(Side * 12, 36, Math.toRadians(270 - (0 * Side))))
                     .build();
+
 
             drive.followTrajectorySequence(traj3);
         }
