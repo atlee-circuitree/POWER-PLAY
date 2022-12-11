@@ -25,6 +25,9 @@ import java.util.ArrayList;
 @Autonomous(name ="Auto Left", group = "drive")
 
 public class AutoLeft extends BaseOpMode {
+    public static boolean autonomousInitialized = true;   // This variable persists between OP Modes and will tell Teleop mode it is running after Autonomous
+
+
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 

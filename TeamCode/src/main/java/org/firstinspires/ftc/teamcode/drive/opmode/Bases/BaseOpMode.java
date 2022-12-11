@@ -68,10 +68,11 @@ public abstract class BaseOpMode extends LinearOpMode {
     public PIDController vertController;
     public PIDController angleController;
 
-    public static double hP = 0.001, hI = 0, hD = 0;
+    public static double hP = 0.004, hI = 0, hD = 0.0001;
+    public static double hF = 0, vF = 0, aF = 0;
+
     public static double vP = 0.007, vI = 0, vD = 0;
     public static double aP = 0.001, aI = 0, aD = 0;
-    public static double hF = 0, vF = 0, aF = 0;
 
     public static int horizArmPIDTarget = 0;
     public static int vertArmPIDTarget = 0;
@@ -92,15 +93,16 @@ public abstract class BaseOpMode extends LinearOpMode {
 
 
     public static int hArmExtend = 2250;
-    public static int hArmRetract = 38;
-
+//    public static int hArmRetract = 38;
+    public static int hArmRetract = 240;
+    public static int hArmRetractFully = 116;
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
-    public static int vArmPickup = 378;
+   // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
     public static int vArmPoleSafe = 4123;
-   // public static int vArmPickup = 400;
+    public static int vArmPickup = 208;
 
     public int behavior;
     public static int behaviorStep = 1;
@@ -858,6 +860,15 @@ public abstract class BaseOpMode extends LinearOpMode {
             rearRight.setPower(0);
 
     }
+
+    public void resetArmEncoders() {
+        angleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        horizArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        angleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        vertArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        horizArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
     /*public void Conesensor(double centimeters) {
         while (FrontColor.getDistance(DistanceUnit.CM) > centimeters) {
             frontLeft.setPower(.1);
@@ -870,7 +881,236 @@ public abstract class BaseOpMode extends LinearOpMode {
             frontRight.setPower(0);
             rearRight.setPower(0);
     }*/
+    public void checkBehaviors() {
 
+        //Check States
+        //if (horizArmState == HORIZ_ARM_RETRACTING) {
+        //    horizArmState = horizArmMech(horizArmState, hArmRetract, ENCODER_ERROR_THRESHOLD);
+        //}
+        //if (horizArmState == HORIZ_ARM_EXTENDING) {
+        //    horizArmState = horizArmMech(horizArmState, vArmTarget, ENCODER_ERROR_THRESHOLD);
+        //}
+        //if (vertArmState == VERT_ARM_RETRACTING) {
+        //    vertArmState = vertArmMech(vertArmState, vArmTarget, ENCODER_ERROR_THRESHOLD);
+        //}
+        //if (vertArmState == VERT_ARM_EXTENDING) {
+        //    vertArmState = vertArmMech(vertArmState, vArmHigh, ENCODER_ERROR_THRESHOLD);
+        // }
+        //Behaviors
+        if (behavior == BEHAVIOR_TRANSFER_CONE) {
+            //lower vert to cone
+            //close transfer claw
+            //open horiz claw
+            //wait till servos finished
+            //raise vert
+            //wait til vArmLow finished
+            //raise vert
+            //flip transfer arm and wrist
+            //lower onto pole
+            if (behaviorStep == 1) {
+                transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
+                // wait(.1); //Don't be evil
+                horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract , ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_RETRACTED) {
+                    behaviorStep = 3;
+                }
+            }
+            if (behaviorStep == 3) {
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                if (vertArm.getCurrentPosition() > vArmLow) {
+                    behaviorStep = 4;
+                }
+            }
+            if (behaviorStep == 4) {
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                if (vertArmState == VERT_ARM_EXTENDED) {
+                    behavior = BEHAVIOR_FINISHED;
+                    behaviorStep = 1;
+                }
+            }
+        }
+
+        if (behavior == BEHAVIOR_TRANSFER_RETURN) {
+            //Move vertArm down on high pole
+            //Open transfer claw
+            //Move vertArm max height
+            //Move transferArm and wrist to front
+            //Move vertArm to low pole/pickup level
+            if (behaviorStep == 1) {  // ArmHigh - vArmPoleInsert seems to mess up going to pickup position
+               // vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+               // if (vertArmState == VERT_ARM_RETRACTED) {
+                  behaviorStep = 2;
+               // }
+            }
+            if (behaviorStep == 2) {
+                transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+
+                // wait(.1); //Don't be evil
+                behaviorStep = 3;
+            }
+
+            if (behaviorStep == 3) {
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                if (vertArm.getCurrentPosition() > vArmPoleSafe) {
+                    behaviorStep = 4;
+                }
+            }
+
+            if (behaviorStep == 4) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmLow, ENCODER_ERROR_THRESHOLD);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    behavior = BEHAVIOR_FINISHED;
+                    behaviorStep = 1;
+                }
+            }
+        }
+        if (behavior == BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX) {
+            horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+        }
+
+        if (behavior == BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX) {
+            horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+        }
+
+
+        if (behavior == BEHAVIOR_EXTEND_VERT_ARM_TO_MAX) {
+            vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+        }
+
+        if (behavior == BEHAVIOR_RETRACT_VERT_ARM_TO_MAX) {
+            vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
+        }
+
+
+        if (behavior == BEHAVIOR_GET_CONE1) {
+            if (behaviorStep == 1) {
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_RETRACTED) {
+                    //horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    behavior = BEHAVIOR_FINISHED;
+                    behaviorStep = 1;
+                }
+            }
+        }
+
+
+        if (behavior == BEHAVIOR_GET_CONE2) {
+            if (behaviorStep == 1) {
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone2, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    behaviorStep = 2;
+                }
+            }
+
+            if (behaviorStep == 2) {
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
+                if (angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                    angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
+                    if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
+                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                        behavior = BEHAVIOR_FINISHED;
+                        behaviorStep = 1;
+                    }
+                }
+            }
+        }
+
+        if (behavior == BEHAVIOR_GET_CONE3) {
+            if (behaviorStep == 1) {
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone3, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
+                if (angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                    angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
+                    if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
+                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                        behavior = BEHAVIOR_FINISHED;
+                        behaviorStep = 1;
+                    }
+                }
+            }
+        }
+
+
+        if (behavior == BEHAVIOR_GET_CONE4) {
+            if (behaviorStep == 1) {
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone4, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
+                if (angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                    angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
+                    if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
+                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                        behavior = BEHAVIOR_FINISHED;
+                        behaviorStep = 1;
+                    }
+                }
+            }
+        }
+
+        if (behavior == BEHAVIOR_GET_CONE5) {
+            if (behaviorStep == 1) {
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone5, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
+                if (angleArmState == ANGLE_ARM_EXTENDED) {
+                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                    angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
+                    if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
+                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                        behavior = BEHAVIOR_FINISHED;
+                        behaviorStep = 1;
+                    }
+                }
+            }
+        }
+    }
 }
 
 

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
@@ -22,14 +24,23 @@ import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 @Config
 @TeleOp(name="TeleOp 2022-2023", group="Linear Opmode")
 public class TeleOP_2022_2023 extends BaseOpMode {
-    @Override
+    boolean autonomousInitialized = true;
 
+
+    @Override
     public void runOpMode() {
 
         GetHardware();
 
         double servoPosition = .5;
         int transferClawPosition = 0;
+        boolean modePreviouslyPressed = false;
+
+        if (!autonomousInitialized) {
+            resetArmEncoders();
+        }
+
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -140,14 +151,20 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 //0 = Driver Mode
                 //1 = Test Mode
                 //2 = Servo Mode
-                if (testModeV == 0) {
-                    testModeV = 1;
-                } else if (testModeV == 1) {
-                    testModeV = 2;
-                } else if (testModeV == 2){
-                    testModeV = 3;
+                //3 = Driver Assist Mode
+                if (!modePreviouslyPressed) {
+                    modePreviouslyPressed = true;
+                    if (testModeV == 0) {
+                        testModeV = 1;
+                    } else if (testModeV == 1) {
+                        testModeV = 2;
+                    } else if (testModeV == 2) {
+                        testModeV = 3;
+                    } else {
+                        testModeV = 0;
+                    }
                 } else {
-                    testModeV = 0;
+                    modePreviouslyPressed = false;
                 }
             }
 
@@ -261,6 +278,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     servoPosition += .01;
                 }
 
+
                 if (gamepad1.dpad_down) {
                     servoTest.setPosition(servoPosition);
                 }
@@ -290,16 +308,19 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }*/
 
                 if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                    //  horizArm.setPower(gamepad1.right_trigger);
-                    behavior = BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX;
+                      horizArm.setPower(gamepad1.right_trigger);
+                    //behavior = BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX;
                 } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    // horizArm.setPower(-gamepad1.left_trigger);
-                    behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
+                   // if (horizArm.getCurrentPosition() >= hArmRetract) {
+                        horizArm.setPower(-gamepad1.left_trigger);
+                  //  }
+
+                   // behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
 
                 }
-                //else {
-                //    horizArm.setPower(0);
-                //}
+                else {
+                    horizArm.setPower(0);
+                }
 
                 //Opens horizClaw
                 if (gamepad1.dpad_down) {
@@ -337,19 +358,19 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 if (gamepad1.a) {
-                    behavior = BEHAVIOR_GET_CONE1;
+                    behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
                 }
 
                 if (gamepad1.x) {
-                    behavior = BEHAVIOR_GET_CONE2;
+                 //   behavior = BEHAVIOR_GET_CONE2;
                 }
 
                 if (gamepad1.y) {
-                    behavior = BEHAVIOR_GET_CONE3;
+                //    behavior = BEHAVIOR_GET_CONE3;
                 }
 
                 if (gamepad1.b) {
-                    behavior = BEHAVIOR_GET_CONE5;
+                 //   behavior = BEHAVIOR_GET_CONE5;
                 }
 
                 /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= vArmMax) {
@@ -395,7 +416,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
                     // } else if (transferClawPosition == 0) {
                     //     transferClawPosition = transferClawPosition + 1;
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                    //transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
                     transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
                     // }
                 }
@@ -428,223 +449,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
 
-                //Check States
-                //if (horizArmState == HORIZ_ARM_RETRACTING) {
-                //    horizArmState = horizArmMech(horizArmState, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                //}
-                //if (horizArmState == HORIZ_ARM_EXTENDING) {
-                //    horizArmState = horizArmMech(horizArmState, vArmTarget, ENCODER_ERROR_THRESHOLD);
-                //}
-                //if (vertArmState == VERT_ARM_RETRACTING) {
-                //    vertArmState = vertArmMech(vertArmState, vArmTarget, ENCODER_ERROR_THRESHOLD);
-                //}
-                //if (vertArmState == VERT_ARM_EXTENDING) {
-                //    vertArmState = vertArmMech(vertArmState, vArmHigh, ENCODER_ERROR_THRESHOLD);
-               // }
-                //Behaviors
-                if (behavior == BEHAVIOR_TRANSFER_CONE) {
-                    //lower vert to cone
-                    //close transfer claw
-                    //open horiz claw
-                    //wait till servos finished
-                    //raise vert
-                    //wait til vArmLow finished
-                    //raise vert
-                    //flip transfer arm and wrist
-                    //lower onto pole
-                    if (behaviorStep == 1) {
-                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
-                        vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
-                        if (vertArmState == VERT_ARM_RETRACTED) {
-                            behaviorStep = 2;
-                        }
-                    }
-                    if (behaviorStep == 2) {
-                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
-                        horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
-                        // wait(.1); //Don't be evil
-                        behaviorStep = 3;
-                    }
-                    if (behaviorStep == 3) {
-                        vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-                        if (vertArm.getCurrentPosition() > vArmLow)
-                            behaviorStep = 4;
-                        }
-                    }
-                    if (behaviorStep == 4) {
-                        vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-                        transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
-                        transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
-                        if (vertArmState == VERT_ARM_EXTENDED) {
-                            behavior = BEHAVIOR_FINISHED;
-                            behaviorStep = 1;
-                        }
-                    }
-                }
-                if (behavior == BEHAVIOR_TRANSFER_RETURN) {
-                    //Move vertArm down on high pole
-                    //Open transfer claw
-                    //Move vertArm max height
-                    //Move transferArm and wrist to front
-                    //Move vertArm to low pole/pickup level
-                    if (behaviorStep == 1) {  // ArmHigh - vArmPoleInsert seems to mess up going to pickup position
-                        vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmHigh , ENCODER_ERROR_THRESHOLD);
-                        if (vertArmState == VERT_ARM_RETRACTED) {
-                            behaviorStep = 2;
-                        }
-                    }
-                    if (behaviorStep == 2) {
-                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
-                        horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
-                        horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                        vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-
-                        // wait(.1); //Don't be evil
-                        behaviorStep = 3;
-                    }
-                    if (behaviorStep == 3) {
-                        vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-                        if (vertArm.getCurrentPosition() > vArmPoleSafe)
-                            behaviorStep = 4;
-                    }
-                }
-                if (behaviorStep == 4) {
-                    vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmLow, ENCODER_ERROR_THRESHOLD);
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
-                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
-                    if (vertArmState == VERT_ARM_RETRACTED) {
-                        behavior = BEHAVIOR_FINISHED;
-                        behaviorStep = 1;
-                    }
-                }
-
-
-
-                if (behavior == BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX) {
-                    horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                }
-                if (behavior == BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX) {
-                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                }
-
-                if (behavior == BEHAVIOR_EXTEND_VERT_ARM_TO_MAX) {
-                    vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-                }
-                if (behavior == BEHAVIOR_RETRACT_VERT_ARM_TO_MAX) {
-                    vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
-                }
-
-
-
-                if (behavior == BEHAVIOR_GET_CONE1) {
-                    if (behaviorStep == 1) {
-                        horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                        angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
-                        if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                            horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                            behaviorStep = 2;
-                        }
-                    }
-                    if (behaviorStep == 2) {
-                        horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                        if (horizArmState == HORIZ_ARM_RETRACTED) {
-                            //horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                            behavior = BEHAVIOR_FINISHED;
-                            behaviorStep = 1;
-                        }
-                    }
-                }
-                if (behavior == BEHAVIOR_GET_CONE2) {
-                    if (behaviorStep == 1) {
-                        horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                        angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone2, ENCODER_ERROR_THRESHOLD);
-                        if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                            horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                            behaviorStep = 2;
-                        }
-                    }
-                    if (behaviorStep == 2) {
-                        angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
-                        if (angleArmState == ANGLE_ARM_EXTENDED) {
-                            horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                            angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
-                            if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
-                                horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                                behavior = BEHAVIOR_FINISHED;
-                                behaviorStep = 1;
-                            }
-                        }
-                    }
-                }
-            if (behavior == BEHAVIOR_GET_CONE3) {
-                if (behaviorStep == 1) {
-                    horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                    angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone3, ENCODER_ERROR_THRESHOLD);
-                    if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                        behaviorStep = 2;
-                    }
-                }
-                if (behaviorStep == 2) {
-                    angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
-                    if (angleArmState == ANGLE_ARM_EXTENDED) {
-                        horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                        angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
-                        if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
-                            horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                            behavior = BEHAVIOR_FINISHED;
-                            behaviorStep = 1;
-                        }
-                    }
-                }
             }
-            if (behavior == BEHAVIOR_GET_CONE4) {
-                if (behaviorStep == 1) {
-                    horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                    angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone4, ENCODER_ERROR_THRESHOLD);
-                    if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                        behaviorStep = 2;
-                    }
-                }
-                if (behaviorStep == 2) {
-                    angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
-                    if (angleArmState == ANGLE_ARM_EXTENDED) {
-                        horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                        angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
-                        if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
-                            horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                            behavior = BEHAVIOR_FINISHED;
-                            behaviorStep = 1;
-                        }
-                    }
-                }
-            }
-            if (behavior == BEHAVIOR_GET_CONE5) {
-                if (behaviorStep == 1) {
-                    horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                    angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone5, ENCODER_ERROR_THRESHOLD);
-                    if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                        behaviorStep = 2;
-                    }
-                }
-                if (behaviorStep == 2) {
-                    angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
-                    if (angleArmState == ANGLE_ARM_EXTENDED) {
-                        horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                        angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
-                        if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
-                            horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                            behavior = BEHAVIOR_FINISHED;
-                            behaviorStep = 1;
-                        }
-                    }
-                }
-            }
-            
-
-
             //Driver mode
             if (testModeV == 0) {
                 //Slows movement
@@ -671,7 +476,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
                     horizArm.setPower(gamepad1.right_trigger);
                 } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                    horizArm.setPower(-gamepad1.left_trigger);
+                   // if (horizArm.getCurrentPosition() >= hArmRetract) {
+                        horizArm.setPower(-gamepad1.left_trigger);
+                   // }
                 } else {
                     horizArm.setPower(0);
                 }
@@ -789,6 +596,27 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     }
                 }
             }
+            checkBehaviors();
+            if (runtime.seconds() > 119 && runtime.seconds() < 121) {
+                transferArmBotttom.setPosition(TRANSFER_ARM_TOP_FRONT);
+                //transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+            }
+
+
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
