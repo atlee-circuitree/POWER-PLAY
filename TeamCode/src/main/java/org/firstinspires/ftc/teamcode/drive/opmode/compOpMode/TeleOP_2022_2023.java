@@ -163,9 +163,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                     } else {
                         testModeV = 0;
                     }
-                } else {
-                    modePreviouslyPressed = false;
                 }
+            } else {
+                modePreviouslyPressed = false;
             }
 
             //Test Mode
