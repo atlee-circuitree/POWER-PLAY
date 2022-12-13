@@ -54,14 +54,16 @@ public abstract class BaseOpMode extends LinearOpMode {
     public int testModeV = 0;
 
 
-    public enum AutoSide {
 
-        REDLEFT,
-        REDRIGHT,
-        BLUELEFT,
-        BLUERIGHT
+    public enum AutoState {
+
+        FIRST,
+        SECOND
+
 
     }
+
+    public AutoState currentState = AutoState.FIRST;
 
     public double SD = 1;
     public double SA = 1;
@@ -104,7 +106,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int HORIZ_ARM_RETRACTED = 1;
     public static int HORIZ_ARM_EXTENDING = 2;
     public static int HORIZ_ARM_EXTENDED = 3;
-
+    public static int HORIZ_ARM_RETRACTING = 4;
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
@@ -129,6 +131,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public final static double ARM_MIN_RANGE = 0.46;
     public final static double ARM_MAX_RANGE = 0.53;
 
+    public final static double ENCODER_ERROR_THRESHOLD = 10;
     public AHRS navx_centered;
 
     ModernRoboticsI2cGyro gyro = null;                    // Additional Gyro device
@@ -250,6 +253,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         }
         telemetry.addData("IMU", "calibrated");
         telemetry.update();
+
     }
 
     public int degreesBore(int input) {
@@ -372,6 +376,17 @@ public abstract class BaseOpMode extends LinearOpMode {
 
         telemetry.addData("Angle Arm Pos", angleArmPos);
         telemetry.addData("Angle Arm Target", angleArmPIDTarget);
+    }
+
+    public int horizArmMech(int horizArmState, double horizArmTarget, double ENCODER_ERROR_THRESHOLD) {
+        if (horizArmState == HORIZ_ARM_EXTENDING) {
+            if (horizArm.getCurrentPosition() - horizArmTarget <= ENCODER_ERROR_THRESHOLD) {
+                horizArmState = HORIZ_ARM_EXTENDED;
+            } else{
+                horizArmPIDLoop(hArmExtend);
+            }
+        }
+        return horizArmState;
     }
 
 
