@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
 /**
@@ -30,6 +29,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
         double servoPosition = .5;
         int transferClawPosition = 0;
+        boolean modePreviouslyPressed = true;
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -91,12 +91,12 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
 
             //Show encoder values on the phone
-            if (testModeV == 1) {
-                telemetry.addData("Test Mode ", testModeV);
-            } else if (testModeV == 2) {
-                telemetry.addData("Servo Test Mode", testModeV);
+            if (testMode == 1) {
+                telemetry.addData("Test Mode ", testMode);
+            } else if (testMode == 2) {
+                telemetry.addData("Servo Test Mode", testMode);
             } else {
-                telemetry.addData("Driver Mode ", testModeV);
+                telemetry.addData("Driver Mode ", testMode);
             }
             telemetry.addData("Left Dead Encoder Pos", frontLeft.getCurrentPosition());
             telemetry.addData("Right Dead Encoder Pos", rearRight.getCurrentPosition());
@@ -130,17 +130,23 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 //0 = Driver Mode
                 //1 = Test Mode
                 //2 = Servo Mode
-                if (testModeV == 0) {
-                    testModeV = 1;
-                } else if (testModeV == 1) {
-                    testModeV = 2;
-                } else {
-                    testModeV = 0;
+                //3 = Driver Assist Mode
+                if (!modePreviouslyPressed) {
+                    modePreviouslyPressed = true;
+                    if (testMode == 0) {
+                        testMode = 1;
+                    } else if (testMode == 1) {
+                        testMode = 2;
+                    } else if (testMode == 2) {
+                        testMode = 3;
+                    } else {
+                        testMode = 0;
+                    }
                 }
             }
 
             //Test Mode
-            if (testModeV == 1) {
+            if (testMode == 1) {
 
                 if (gamepad1.left_stick_button) {
                     SD = .25;
@@ -278,7 +284,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
 
             }
             //Servo Test Mode
-            if (testModeV == 2) {
+            if (testMode == 2) {
                 if (gamepad1.x) {
                     servoPosition -= .1;
                 }
@@ -300,8 +306,174 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
             }
 
+            //Driver Assist mode
+            if (testMode == 3) {
+                //Slows movement
+                if (gamepad1.left_stick_button) {
+                    SD = .25;
+                } else {
+                    SD = 1;
+                }
+
+                //Resets NavX heading
+                if (gamepad1.back) {
+                    zeroGyro();
+                }
+
+                //Extends and Retracts horizArm
+                /*if (gamepad1.right_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() <= hArmMax) {
+                        horizArm.setPower(gamepad1.right_trigger);
+                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD && horizArm.getCurrentPosition() >= 0) {
+                        horizArm.setPower(-gamepad1.left_trigger);
+                } else {
+                    horizArm.setPower(0);
+                }*/
+
+                if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                      horizArm.setPower(gamepad1.right_trigger);
+                    //behavior = BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX;
+                } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                   // if (horizArm.getCurrentPosition() >= hArmRetract) {
+                        horizArm.setPower(-gamepad1.left_trigger);
+                  //  }
+
+                   // behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
+
+                }
+                else {
+                    horizArm.setPower(0);
+                }
+
+                //Opens horizClaw
+                if (gamepad1.dpad_down) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_OPEN);
+                }
+
+                //Closes horizClaw
+                if (gamepad1.dpad_left) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                }
+
+                if (gamepad1.dpad_up) {
+                    horizClaw.setPosition((HORIZONTAL_CLAW_MIDDLE));
+                }
+
+                if (gamepad1.dpad_right) {
+                    horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
+                }
+
+                //Moves angleArm up and down
+                /*if (gamepad1.right_bumper && angleArm.getTargetPosition() <= aArmMax) {
+                        angleArm.setPower(1);
+                } else if (gamepad1.left_bumper && angleArm.getCurrentPosition() >= 0) {
+                        angleArm.setPower(-1);
+                } else {
+                    angleArm.setPower(0);
+                }*/
+
+                if (gamepad1.right_bumper) {
+                    angleArm.setPower(1);
+                } else if (gamepad1.left_bumper) {
+                    angleArm.setPower(-1);
+                } else {
+                    angleArm.setPower(0);
+                }
+
+                if (gamepad1.a) {
+                    behavior = Behavior.RETRACT_HORIZ_ARM_TO_MAX;
+                }
+
+                if (gamepad1.x) {
+                 //   behavior = BEHAVIOR_GET_CONE2;
+                }
+
+                if (gamepad1.y) {
+                //    behavior = BEHAVIOR_GET_CONE3;
+                }
+
+                if (gamepad1.b) {
+                 //   behavior = BEHAVIOR_GET_CONE5;
+                }
+
+                /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= vArmMax) {
+                        vertArm.setPower(gamepad2.right_trigger);
+                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() >= 0) {
+                        vertArm.setPower(-gamepad2.left_trigger);
+                } else {
+                    vertArm.setPower(0);
+                }*/
+
+                if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+                    // vertArm.setPower(gamepad2.right_trigger);
+                    behavior = Behavior.EXTEND_VERT_ARM_TO_MAX;
+                } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
+                    //vertArm.setPower(-gamepad2.left_trigger);
+                    behavior = Behavior.RETRACT_VERT_ARM_TO_MAX;
+                }
+                //else {
+                //    vertArm.setPower(0);
+                //}
+
+                //Opens and Closes Transfer Claw
+                //Opens transfer claw
+                if (gamepad2.dpad_right) {
+                    transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                }
+
+                //Close transfer claw
+                if (gamepad2.dpad_left) {
+                    transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
+                }
+
+                //Moves transferArmBottom to front
+                if (gamepad2.x) {
+                    //0 = Middle Position
+                    //1 = Front Position
+                    //-1 = Back Position
+                    // if (transferClawPosition == -1) {
+
+                    //     transferClawPosition = transferClawPosition + 1;
+                    //     transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_CENTER);
+                    //     transferArmTop.setPosition(TRANSFER_ARM_TOP_CENTER);
+                    // } else if (transferClawPosition == 0) {
+                    //     transferClawPosition = transferClawPosition + 1;
+                    //transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                    transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                    // }
+                }
+
+                //Moves transferArm to back
+                if (gamepad2.y) {
+                    behavior = Behavior.TRANSFER_CONE;
+                }
+
+                //Returns transferArm to front
+                if (gamepad2.b) {
+                    behavior = Behavior.TRANSFER_RETURN;
+                }
+
+                if (gamepad2.a) {
+                    //0 = Middle Position
+                    //1 = Front Position
+
+                    //-1 = Back Position
+                    if (transferClawPosition == 1) {
+                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+
+
+                        transferClawPosition = transferClawPosition + 1;
+                        transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                    } else if (transferClawPosition == 0) {
+                        transferClawPosition = transferClawPosition + 1;
+                        transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    }
+                }
+
+
+            }
             //Driver mode
-            if (testModeV == 0) {
+            if (testMode == 0) {
                 //Slows movement
                 if (gamepad1.left_stick_button) {
                     SD = .25;

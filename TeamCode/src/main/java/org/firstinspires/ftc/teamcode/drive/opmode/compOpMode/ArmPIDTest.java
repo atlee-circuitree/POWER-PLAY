@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
@@ -94,12 +93,12 @@ public class ArmPIDTest extends BaseOpMode {
 */
 
             //Show encoder values on the phone
-            if (testModeV == 1) {
-                telemetry.addData("Test Mode ", testModeV);
-            } else if (testModeV == 2) {
-                telemetry.addData("Servo Test Mode", testModeV);
+            if (testMode == 1) {
+                telemetry.addData("Test Mode ", testMode);
+            } else if (testMode == 2) {
+                telemetry.addData("Servo Test Mode", testMode);
             } else {
-                telemetry.addData("Driver Mode ", testModeV);
+                telemetry.addData("Driver Mode ", testMode);
             }
             telemetry.addData("Horiz Arm Power", horizArm.getPower());
             telemetry.addData("Vert Arm Power", vertArm.getPower());
@@ -115,17 +114,17 @@ public class ArmPIDTest extends BaseOpMode {
                 //0 = Driver Mode
                 //1 = Test Mode
                 //2 = Servo Mode
-                if (testModeV == 0) {
-                    testModeV = 1;
-                } else if (testModeV == 1) {
-                    testModeV = 2;
+                if (testMode == 0) {
+                    testMode = 1;
+                } else if (testMode == 1) {
+                    testMode = 2;
                 } else {
-                    testModeV = 0;
+                    testMode = 0;
                 }
             }
 
             //Test Mode
-            if (testModeV == 1) {
+            if (testMode == 1) {
 
                 if (gamepad1.left_stick_button) {
                     SD = .25;
@@ -240,7 +239,7 @@ public class ArmPIDTest extends BaseOpMode {
 
             }
             //Servo Test Mode
-            if (testModeV == 2) {
+            if (testMode == 2) {
                 if (gamepad1.x) {
                     servoPosition += .1;
                 }
@@ -263,7 +262,7 @@ public class ArmPIDTest extends BaseOpMode {
             }
 
             //Driver mode
-            if (testModeV == 0) {
+            if (testMode == 0) {
                 //Slows movement
                 if (gamepad1.left_stick_button) {
                     SD = .25;

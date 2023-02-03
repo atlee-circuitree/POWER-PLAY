@@ -47,7 +47,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public DistanceSensor RRdistance;
 
     public Servo servoTest = null;
-    public int testModeV = 0;
+    public int testMode = 0;
 
 
 
@@ -67,10 +67,9 @@ public abstract class BaseOpMode extends LinearOpMode {
     public PIDController vertController;
     public PIDController angleController;
 
-    public static double hP = 0, hI = 0, hD = 0;
-    public static double vP = 0, vI = 0, vD = 0;
-    public static double aP = 0, aI = 0, aD = 0;
-    public static double hF = 0, vF = 0, aF = 0;
+    public static double hP = 0.004, hI = 0, hD = 0.0001, hF = 0;
+    public static double vP = 0.007, vI = 0, vD = 0, vF = 0;
+    public static double aP = 0.001, aI = 0, aD = 0, aF = 0;
 
     public static int horizArmPIDTarget = 0;
     public static int vertArmPIDTarget = 0;
@@ -91,16 +90,78 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
-    public static int vArmPickup = 378;
 
-    public static int hArmMax = 1000; //in ticks
-    public static int vArmMax = 1000;
-    public static int aArmMax = 1000;
+   // public static int vArmPickup = 378;
+    public static int vArmPoleInsert = 100;
+    public static int vArmPoleSafe = 4123;
+    public static int vArmPickup = 208;
+
+    public Behavior behavior;
+    public static int behaviorStep = 1;
+    public int vArmTarget = 0;
+
+    public static int HORIZ_ARM_STOP = 0;
+    public static int horizArmState = 1;
+    public static int HORIZ_ARM_RETRACTED = 1;
+    public static int HORIZ_ARM_RETRACTING = 2;
+    public static int HORIZ_ARM_EXTENDING = 3;
+    public static int HORIZ_ARM_EXTENDED = 4;
+
+    public static int vertArmState = 1;
+    public static int VERT_ARM_STOP = 0;
+    public static int VERT_ARM_RETRACTED = 1;
+    public static int VERT_ARM_RETRACTING = 2;
+    public static int VERT_ARM_EXTENDING = 3;
+    public static int VERT_ARM_EXTENDED = 4;
+
+    public static int angleArmState = 1;
+    public static int ANGLE_ARM_STOP = 0;
+    public static int ANGLE_ARM_RETRACTED = 1;
+    public static int ANGLE_ARM_RETRACTING = 2;
+    public static int ANGLE_ARM_EXTENDING = 3;
+    public static int ANGLE_ARM_EXTENDED = 4;
+
+    public enum Behavior
+    {
+        /** Behavior state is finished. */
+        FINISHED,
+        /** Extends Horizontal arm to the encoder position specified in hArmExtend  */
+        EXTEND_HORIZ_ARM_TO_MAX,
+        /** Retracts Horizontal arm to the encoder position specified in hArmRetract */
+        RETRACT_HORIZ_ARM_TO_MAX,
+        /** Extends Vertical arm to the encoder position specified in vArmExtend  */
+        EXTEND_VERT_ARM_TO_MAX,
+        /** Retracts Vertical arm to the encoder position specified in vArmRetract  */
+        RETRACT_VERT_ARM_TO_MAX,
+        /** Grabs a cone from the retracted horizontal arm, lifts it, and flips it to the front of the robot.*/
+        TRANSFER_CONE,
+        /** Releases the cone from the transfer arm, flips the arm to the back of the robot, and lowers.*/
+        TRANSFER_RETURN,
+        /** Get a cone off the stack. 1 is lowest, 5 is highest*/
+        GET_CONE1,
+        GET_CONE2,
+        GET_CONE3,
+        GET_CONE4,
+        GET_CONE5
+    }
+    public static int BEHAVIOR_FINISHED = 0;
+    public static int BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX = 1;
+    public static int BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX = 2;
+    public static int BEHAVIOR_EXTEND_VERT_ARM_TO_MAX = 3;
+    public static int BEHAVIOR_RETRACT_VERT_ARM_TO_MAX = 4 ;
+    public static int BEHAVIOR_TRANSFER_CONE = 5;
+    public static int BEHAVIOR_TRANSFER_RETURN = 6;
+    public static int BEHAVIOR_GET_CONE1 = 7;
+    public static int BEHAVIOR_GET_CONE2 = 8;
+    public static int BEHAVIOR_GET_CONE3 = 9;
+    public static int BEHAVIOR_GET_CONE4 = 10;
+    public static int BEHAVIOR_GET_CONE5 = 11;
+    public int coneStackHeight = 5;
 
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
-    public static double HORIZONTAL_CLAW_CLOSE = .9;
+    public static double HORIZONTAL_CLAW_CLOSE = 0.94;
     public static double HORIZONTAL_CLAW_MIDDLE = .68;
     public static double HORIZONTAL_CLAW_HALF_CLOSE = .7;
     public static double TRANSFER_CLAW_OPEN = .82;
@@ -187,6 +248,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizController = new PIDController(hP, hI, hD);
         vertController = new PIDController(vP, vI, vD);
         angleController = new PIDController(aP, aI, aD);
+
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -718,7 +780,22 @@ public abstract class BaseOpMode extends LinearOpMode {
             frontRight.setPower(0);
             rearRight.setPower(0);
     }*/
+    public void checkBehaviors() {
 
+        //Check States
+        //if (horizArmState == HORIZ_ARM_RETRACTING) {
+        //    horizArmState = horizArmMech(horizArmState, hArmRetract, ENCODER_ERROR_THRESHOLD);
+        //}
+        //if (horizArmState == HORIZ_ARM_EXTENDING) {
+        //    horizArmState = horizArmMech(horizArmState, vArmTarget, ENCODER_ERROR_THRESHOLD);
+        //}
+        //if (vertArmState == VERT_ARM_RETRACTING) {
+        //    vertArmState = vertArmMech(vertArmState, vArmTarget, ENCODER_ERROR_THRESHOLD);
+        //}
+        //if (vertArmState == VERT_ARM_EXTENDING) {
+        //    vertArmState = vertArmMech(vertArmState, vArmHigh, ENCODER_ERROR_THRESHOLD);
+        // }
+    }
 }
 
 

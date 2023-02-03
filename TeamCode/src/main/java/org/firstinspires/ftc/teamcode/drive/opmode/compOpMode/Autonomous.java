@@ -57,3 +57,7 @@ public class Autonomous extends BaseOpMode {
         drive.followTrajectorySequence(traj1);
     }
 }
+//(notes for Jesse) Test code before continuing with the true codes
+//test control values and experimental values
+//use camera to detect other robots? Stop robot if another seen. Only for team bots. Indicator (i.e. relective tape, certain color)
+//code for countdown? represents autonomous time
