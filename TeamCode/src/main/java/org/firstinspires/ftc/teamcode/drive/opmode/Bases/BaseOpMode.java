@@ -182,6 +182,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     public final static double ARM_MIN_RANGE = 0.46;
     public final static double ARM_MAX_RANGE = 0.53;
 
+    public FtcDashboard dashboard = FtcDashboard.getInstance();
+
     public AHRS navx_centered;
 
     ModernRoboticsI2cGyro gyro    = null;                    // Additional Gyro device
@@ -357,15 +359,12 @@ public abstract class BaseOpMode extends LinearOpMode {
     public void vertArmPIDLoop(int posTarget) {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
-        double pid = vertController.calculate((vertArmPos), posTarget);
+        double pid = vertController.calculate(vertArmPos, posTarget);
         double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
 
         double vertArmPower = pid + ff;
 
         vertArm.setPower(vertArmPower);
-
-        telemetry.addData("Vert Arm Pos", vertArmPos);
-        telemetry.addData("Vert Arm Target", posTarget);
     }
 
     //posTarget is distance you want to put in like the value of hArmExtend

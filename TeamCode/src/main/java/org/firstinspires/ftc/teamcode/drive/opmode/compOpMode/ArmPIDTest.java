@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.compOpMode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 
 /**
@@ -25,11 +28,11 @@ public class ArmPIDTest extends BaseOpMode {
 
     public void runOpMode() {
 
-
         GetHardware();
 
         double servoPosition = .5;
         int transferClawPosition = 0;
+        Telemetry telemetry = new MultipleTelemetry(this.telemetry, dashboard.getTelemetry());
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -91,6 +94,7 @@ public class ArmPIDTest extends BaseOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 */
+            int vertArmPos = vertArm.getCurrentPosition();
 
             //Show encoder values on the phone
             if (testMode == 1) {
@@ -106,6 +110,11 @@ public class ArmPIDTest extends BaseOpMode {
             telemetry.addData("RearLeftSensor", RLdistance);
             telemetry.addData("RearRightSensor", RRdistance);
             //telemetry.addData("FrontSensor",FrontColor);
+            telemetry.addData("Vert Arm Pos", vertArmPos);
+            telemetry.addData("Vert Arm Safe Pos", vArmPoleSafe);
+            telemetry.addData("Vert Arm Pole Insert Pos", vArmPoleInsert);
+            telemetry.addData("Vert Arm Pickup Pos", vArmPickup);
+
             telemetry.update();
 
 
@@ -191,19 +200,22 @@ public class ArmPIDTest extends BaseOpMode {
                 }
 
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    vertArmPIDTarget = 1000;
+                    vertArmPIDTarget += 50;
                 }
 
+                //You need to hold it otherwise the arm will no go to the correct position
+                //since the button calls the function that calculates the power needed to move the arm.
+                //Will need to rewrite this later
                 if (gamepad2.right_bumper) {
-                    vertArmPIDTarget += 100;
+                    vertArmPIDLoop(vArmPoleInsert);
                 }
 
                 if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    vertArmPIDTarget = 0;
+                    vertArmPIDLoop(vArmPickup);
                 }
 
                 if (gamepad2.left_bumper) {
-                    vertArmPIDTarget -= 100;
+                    vertArmPIDLoop(vArmPoleSafe);
                 }
 
                 //Opens and Closes Transfer Claw
