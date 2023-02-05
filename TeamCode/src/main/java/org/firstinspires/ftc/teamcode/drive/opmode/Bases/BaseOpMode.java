@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.Bases;
 
+import android.view.Gravity;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -67,8 +69,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     public PIDController vertController;
     public PIDController angleController;
 
-    public static double hP = 0.004, hI = 0, hD = 0.0001, hF = 0;
-    public static double vP = 0.007, vI = 0, vD = 0, vF = 0;
+    public static double hP = 0.004, hI = 0, hD = 0.0001, hF = 0, hG = 0;
+    public static double vP = 0.007, vI = 0, vD = 0, vF = 0, vG = 0.001;
     public static double aP = 0.001, aI = 0, aD = 0, aF = 0;
 
     public static int horizArmPIDTarget = 0;
@@ -344,9 +346,9 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), posTarget);
-        double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
+       // double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
 
-        double horizArmPower = pid + ff;
+        double horizArmPower = pid + hF;
 
         horizArm.setPower(horizArmPower);
 
@@ -360,11 +362,11 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
         double pid = vertController.calculate(vertArmPos, posTarget);
-        double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
+       // double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
 
-        double vertArmPower = pid + ff;
-
+        double vertArmPower = pid + vG;
         vertArm.setPower(vertArmPower);
+        telemetry.addData("Gravity", vG);
     }
 
     //posTarget is distance you want to put in like the value of hArmExtend

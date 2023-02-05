@@ -114,6 +114,10 @@ public class ArmPIDTest extends BaseOpMode {
             telemetry.addData("Vert Arm Safe Pos", vArmPoleSafe);
             telemetry.addData("Vert Arm Pole Insert Pos", vArmPoleInsert);
             telemetry.addData("Vert Arm Pickup Pos", vArmPickup);
+            telemetry.addData("Gravity",vG);
+            telemetry.addData("HorizArmPos", horizArm.getCurrentPosition());
+            telemetry.addData("HorizArmExtened", hArmExtend);
+            telemetry.addData("HorizArmRetracted", hArmRetract);
 
             telemetry.update();
 
@@ -148,15 +152,19 @@ public class ArmPIDTest extends BaseOpMode {
 
 
                 if (gamepad1.x) {
-                    horizArmPIDTarget = 1000;
+                    horizArmPIDLoop(hArmExtend);
+
+                } else {
+                    horizArm.setPower(0);
                 }
+
 
                 if (gamepad1.y) {
                     horizArmPIDTarget += 100;
                 }
 
                 if (gamepad1.a) {
-                    horizArmPIDTarget = 0;
+                    horizArmPIDLoop(hArmRetract);
                 }
 
                 if (gamepad1.b) {
@@ -216,6 +224,10 @@ public class ArmPIDTest extends BaseOpMode {
 
                 if (gamepad2.left_bumper) {
                     vertArmPIDLoop(vArmPoleSafe);
+                    behavior = Behavior.TRANSFER_CONE;
+
+                } else {
+                    vertArm.setPower(0);
                 }
 
                 //Opens and Closes Transfer Claw
