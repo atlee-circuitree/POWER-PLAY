@@ -68,10 +68,10 @@ public abstract class BaseOpMode extends LinearOpMode {
     public PIDController vertController;
     public PIDController angleController;
 
-    public static double hP = 0.004, hI = 0, hD = 0.0001;
+    public static double hP = 0.004, hI = 0.001, hD = 0.0001;
     public static double hF = 0, vF = 0, aF = 0;
 
-    public static double vP = 0.007, vI = 0, vD = 0;
+    public static double vP = 0.007, vI = 0.001, vD = 0, vG = 0.001;
     public static double aP = 0.001, aI = 0, aD = 0;
 
     public static int horizArmPIDTarget = 0;
@@ -94,7 +94,7 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public static int hArmExtend = 2250;
 //    public static int hArmRetract = 38;
-    public static int hArmRetract = 240;
+    public static int hArmRetract = 220;
     public static int hArmRetractFully = 116;
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
@@ -209,10 +209,10 @@ public abstract class BaseOpMode extends LinearOpMode {
         getCenteredNavXValues();
         GetIMU();
         //Motor and Servo Variables
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+        frontLeft = hardwareMap.get(DcMotorEx.class, "frontLeft");
+        rearLeft = hardwareMap.get(DcMotorEx.class, "rearLeft");
+        frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
+        rearRight = hardwareMap.get(DcMotorEx.class, "rearRight");
 
         horizArm = hardwareMap.get(DcMotorEx.class, "horizArm");
         vertArm = hardwareMap.get(DcMotorEx.class, "vertArm");
@@ -327,9 +327,9 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), posTarget);
-        double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
+       // double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
 
-        double horizArmPower = pid + ff;
+        double horizArmPower = pid + hF;
 
 
         horizArm.setPower(horizArmPower);
@@ -345,9 +345,9 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
         double pid = vertController.calculate((vertArmPos), posTarget);
-        double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
+        // double ff = Math.cos(Math.toRadians(posTarget / vertArmTicksPerRev)) * vF;
 
-        double vertArmPower = pid + ff;
+        double vertArmPower = pid + vG;
 
         vertArm.setPower(vertArmPower);
 
@@ -376,9 +376,9 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), horizArmPIDTarget);
-        double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
+       // double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
 
-        double horizArmPower = pid + ff;
+        double horizArmPower = pid + hF;
 
         horizArm.setPower(horizArmPower);
 
@@ -390,9 +390,9 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertController.setPID(vP, vI, vD);
         int vertArmPos = vertArm.getCurrentPosition();
         double pid = vertController.calculate((vertArmPos), vertArmPIDTarget);
-        double ff = Math.cos(Math.toRadians(vertArmPIDTarget / vertArmTicksPerRev)) * vF;
+        //double ff = Math.cos(Math.toRadians(vertArmPIDTarget / vertArmTicksPerRev)) * vF;
 
-        double vertArmPower = pid + ff;
+        double vertArmPower = pid + vG;
 
         vertArm.setPower(vertArmPower);
 
@@ -425,6 +425,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         if (horizArmState == HORIZ_ARM_RETRACTING) {
             if (Math.abs(horizArm.getCurrentPosition() - horizArmTarget) <= ENCODER_ERROR_THRESHOLD) {
                 horizArmState = HORIZ_ARM_RETRACTED;
+                horizArm.setPower(0);
             } else {
                 horizArmPIDLoop(horizArmTarget);
             }
@@ -445,6 +446,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         if (vertArmState == VERT_ARM_RETRACTING) {
             if (Math.abs(vertArm.getCurrentPosition() - vertArmTarget) <= ENCODER_ERROR_THRESHOLD) {
                 vertArmState = VERT_ARM_RETRACTED;
+                horizArm.setPower(0);
             } else {
                 vertArmPIDLoop(vertArmTarget);
             }
@@ -918,7 +920,7 @@ public abstract class BaseOpMode extends LinearOpMode {
                 transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
                 horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
                 // wait(.1); //Don't be evil
-                horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract , ENCODER_ERROR_THRESHOLD);
+                horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetractFully , ENCODER_ERROR_THRESHOLD);
                 if (horizArmState == HORIZ_ARM_RETRACTED) {
                     behaviorStep = 3;
                 }

@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.drive.opmode.Bases.BaseOpMode;
 @Config
 @TeleOp(name="TeleOp 2022-2023", group="Linear Opmode")
 public class TeleOP_2022_2023 extends BaseOpMode {
-    boolean autonomousInitialized = true;
-
+    boolean autonomousInitialized = false;
+    public static double graphMe = 0;
 
     @Override
     public void runOpMode() {
@@ -308,14 +308,14 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }*/
 
                 if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                      horizArm.setPower(gamepad1.right_trigger);
-                    //behavior = BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX;
+                     // horizArm.setPower(gamepad1.right_trigger);
+                    behavior = BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX;
                 } else if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
-                   // if (horizArm.getCurrentPosition() >= hArmRetract) {
-                        horizArm.setPower(-gamepad1.left_trigger);
-                  //  }
+                   //if (horizArm.getCurrentPosition() >= hArmRetract) {
+                    //    horizArm.setPower(-gamepad1.left_trigger);
+                   // }
 
-                   // behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
+                   behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
 
                 }
                 else {
@@ -387,10 +387,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
                     //vertArm.setPower(-gamepad2.left_trigger);
                     behavior = BEHAVIOR_RETRACT_VERT_ARM_TO_MAX;
+                } else {
+                    vertArm.setPower(0);
                 }
-                //else {
-                //    vertArm.setPower(0);
-                //}
 
                 //Opens and Closes Transfer Claw
                 //Opens transfer claw
