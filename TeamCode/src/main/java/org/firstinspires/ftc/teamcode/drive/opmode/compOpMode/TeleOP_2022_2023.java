@@ -358,7 +358,7 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }
 
                 if (gamepad1.a) {
-                    behavior = BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX;
+                    behavior = BEHAVIOR_GET_CONE1;
                 }
 
                 if (gamepad1.x) {
@@ -382,11 +382,11 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 }*/
 
                 if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
-                    // vertArm.setPower(gamepad2.right_trigger);
-                    behavior = BEHAVIOR_EXTEND_VERT_ARM_TO_MAX;
+                     vertArm.setPower(gamepad2.right_trigger);
+                    //behavior = BEHAVIOR_EXTEND_VERT_ARM_TO_MAX;
                 } else if (gamepad2.left_trigger > TRIGGER_THRESHOLD) {
-                    //vertArm.setPower(-gamepad2.left_trigger);
-                    behavior = BEHAVIOR_RETRACT_VERT_ARM_TO_MAX;
+                    vertArm.setPower(-gamepad2.left_trigger);
+                    //behavior = BEHAVIOR_RETRACT_VERT_ARM_TO_MAX;
                 } else {
                     vertArm.setPower(0);
                 }
