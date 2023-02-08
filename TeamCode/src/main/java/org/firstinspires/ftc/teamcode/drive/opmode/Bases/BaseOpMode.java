@@ -95,14 +95,14 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int hArmExtend = 2250;
 //    public static int hArmRetract = 38;
     public static int hArmRetract = 220;
-    public static int hArmRetractFully = 116;
+    public static int hArmRetractFully = 180;
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
    // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
     public static int vArmPoleSafe = 4123;
-    public static int vArmPickup = 208;
+    public static int vArmPickup = 180;
 
     public int behavior;
     public static int behaviorStep = 1;
