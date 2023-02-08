@@ -192,6 +192,7 @@ public class AutoLeft extends BaseOpMode {
 
             //put arm movements here
 
+/*
         if ((Side == Left && SelectedLane == Lane1) || (Side == Right && SelectedLane == Lane3)) {
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(trajStart.end())
                 //.lineTo(new Vector2d(Side * 67, 16)) went too far and hit 5 stack cones'
@@ -229,7 +230,7 @@ public class AutoLeft extends BaseOpMode {
 
             drive.followTrajectorySequence(traj3);
         }
-
+*/
     }
     void tagToTelemetry(AprilTagDetection detection)
     {
