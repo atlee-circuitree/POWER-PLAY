@@ -94,15 +94,19 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public static int hArmExtend = 2250;
 //    public static int hArmRetract = 38;
-    public static int hArmRetract = 220;
-    public static int hArmRetractFully = 116;
+    public static int hArmRetract = 189;
+    public static int hArmRetractFully = 20;    //180
     public static int vArmHigh = 4173;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
    // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
     public static int vArmPoleSafe = 4123;
-    public static int vArmPickup = 184;
+<<<<<<< HEAD
+    public static int vArmPickup = 344;    //184
+=======
+    public static int vArmPickup = 180;
+>>>>>>> 26ad0c339b7fa32fe8ad6b474e500fd6b71ae64b
 
     public int behavior;
     public static int behaviorStep = 1;
@@ -166,7 +170,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public final static double ARM_DEFAULT = 0.5; //Unslash this if you want armTurn servo using joystick back (This is for variable turn of a servo)
     public final static double ARM_MIN_RANGE = 0.46;
     public final static double ARM_MAX_RANGE = 0.53;
-    public static int ENCODER_ERROR_THRESHOLD = 10;
+    public static int ENCODER_ERROR_THRESHOLD = 60;
 
     public AHRS navx_centered;
 
