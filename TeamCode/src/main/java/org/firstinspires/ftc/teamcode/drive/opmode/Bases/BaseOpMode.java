@@ -102,7 +102,7 @@ public abstract class BaseOpMode extends LinearOpMode {
    // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
     public static int vArmPoleSafe = 4123;
-    public static int vArmPickup = 208;
+    public static int vArmPickup = 184;
 
     public int behavior;
     public static int behaviorStep = 1;
