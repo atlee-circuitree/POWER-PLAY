@@ -26,7 +26,8 @@ import java.util.ArrayList;
 
 public class AutoLeft extends BaseOpMode {
     public static boolean autonomousInitialized = true;   // This variable persists between OP Modes and will tell Teleop mode it is running after Autonomous
-
+    public static double autoTimer;
+    public static double AUTO_END_TIME = 5;
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -190,8 +191,15 @@ public class AutoLeft extends BaseOpMode {
                     .build();
             drive.followTrajectorySequence(trajStart);
 
-            //put arm movements here
 
+        while (isStarted() && !isStopRequested() && (30 - runtime.seconds() >= AUTO_END_TIME)) {
+            //put arm movements here
+            autoBehavior = BEHAVIOR_AUTO;
+            checkBehaviors();
+        }
+
+
+/*
         if ((Side == Left && SelectedLane == Lane1) || (Side == Right && SelectedLane == Lane3)) {
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(trajStart.end())
                 //.lineTo(new Vector2d(Side * 67, 16)) went too far and hit 5 stack cones'
@@ -229,7 +237,7 @@ public class AutoLeft extends BaseOpMode {
 
             drive.followTrajectorySequence(traj3);
         }
-
+*/
     }
     void tagToTelemetry(AprilTagDetection detection)
     {
