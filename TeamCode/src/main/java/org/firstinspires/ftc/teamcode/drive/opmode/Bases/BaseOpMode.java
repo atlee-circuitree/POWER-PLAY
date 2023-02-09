@@ -51,7 +51,6 @@ public abstract class BaseOpMode extends LinearOpMode {
     public int testModeV = 0;
 
 
-
     public enum AutoSide {
 
         REDLEFT,
@@ -82,7 +81,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int vertArmEncoderTarget = 0;
     public static int angleArmEncoderTarget = 0;
 
-    public static int aArmCone5 = 3578;
+    public static int aArmCone5 = 3416;
     public static int aArmCone4 = 2778;
     public static int aArmCone3 = 2475;
     public static int aArmCone2 = 1986;
@@ -90,25 +89,27 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int aArmConeLift = 4378;
     public static int aArmConeFlat = 1170;
     public static int aArmConeRaisedSlightly = 1650;
+    public static int aArmabovestack = 4000;
     public static int aArmConeGround = 0;
     public static int angleArmOffset = 0;
 
 
     public static int hArmExtend = 2250;
-//    public static int hArmRetract = 38;
+    public static int hArmExtendcone5 = 2012;
+    //    public static int hArmRetract = 38;
     public static int hArmRetract = 189;
-    public static int hArmRetractFully = 40;    //180
+    public static int hArmRetractFully = 40;//180
+
     public static double WAIT_FOR_CLAW = 1000;
+    public static double WAIT_FOR_ARM = 1000;
     public static int vArmHigh = 3365;
     public static int vArmMid = 2700;
     public static int vArmLow = 2186;
-   // public static int vArmPickup = 378;
+    // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
     public static int vArmPoleSafe = 4123;
 
     public static int vArmPickup = 184;    //184
-
-
 
 
     public int behavior;
@@ -140,7 +141,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX = 1;
     public static int BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX = 2;
     public static int BEHAVIOR_EXTEND_VERT_ARM_TO_MAX = 3;
-    public static int BEHAVIOR_RETRACT_VERT_ARM_TO_MAX = 4 ;
+    public static int BEHAVIOR_RETRACT_VERT_ARM_TO_MAX = 4;
     public static int BEHAVIOR_TRANSFER_CONE = 5;
     public static int BEHAVIOR_TRANSFER_RETURN = 6;
     public static int BEHAVIOR_GET_CONE1 = 7;
@@ -177,7 +178,7 @@ public abstract class BaseOpMode extends LinearOpMode {
     double timer;
     public AHRS navx_centered;
 
-    ModernRoboticsI2cGyro gyro    = null;                    // Additional Gyro device
+    ModernRoboticsI2cGyro gyro = null;                    // Additional Gyro device
 
     public BNO055IMU imu;
     public Orientation lastAngles = new Orientation();
@@ -187,25 +188,25 @@ public abstract class BaseOpMode extends LinearOpMode {
     //turn motor at 200 ticks per second
     public double motorVelocity = 200;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 383.6;    // eg: GOBUILDA Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 3.93701;     // For figuring circumference
-    public static final double     COUNTS_PER_INCH  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    static final double COUNTS_PER_MOTOR_REV = 383.6;    // eg: GOBUILDA Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
+    static final double WHEEL_DIAMETER_INCHES = 3.93701;     // For figuring circumference
+    public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * Math.PI);
-    static final double     DRIVE           = 1;
+    static final double DRIVE = 1;
 
-    static final double     OMNI_COUNTS_PER_REV     = 8192; //For rev through bore encoder (This is the correct number)
-    static final double     OMNI_WHEEL_DIAMETER     = 3.77953;
-    public static final double      OMNI_COUNTS_PER_INCH    = (OMNI_COUNTS_PER_REV) / (OMNI_WHEEL_DIAMETER * Math.PI);
+    static final double OMNI_COUNTS_PER_REV = 8192; //For rev through bore encoder (This is the correct number)
+    static final double OMNI_WHEEL_DIAMETER = 3.77953;
+    public static final double OMNI_COUNTS_PER_INCH = (OMNI_COUNTS_PER_REV) / (OMNI_WHEEL_DIAMETER * Math.PI);
 
     // These constants define the desired driving/control characteristics
     // The can/should be tweaked to suite the specific robot drive train.
-    static final double     DRIVE_SPEED             = 0.7;     // Nominal speed for better accuracy.
-    static final double     TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
+    static final double DRIVE_SPEED = 0.7;     // Nominal speed for better accuracy.
+    static final double TURN_SPEED = 0.5;     // Nominal half speed for better accuracy.
 
-    static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
-    static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
-    static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
+    static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
+    static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
+    static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
     //Initializes hardware
@@ -232,10 +233,9 @@ public abstract class BaseOpMode extends LinearOpMode {
 
         servoTest = hardwareMap.get(Servo.class, "servoTest");
 
-     //  FrontColor = hardwareMap.get(ColorSensor.class, "FrontColor");
+        //  FrontColor = hardwareMap.get(ColorSensor.class, "FrontColor");
         RLdistance = hardwareMap.get(DistanceSensor.class, "RLdistance");
         RRdistance = hardwareMap.get(DistanceSensor.class, "RRdistance");
-
 
 
         horizController = new PIDController(hP, hI, hD);
@@ -268,7 +268,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         angleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-       // SetDriveMode(Mode.RUN_WITH_ENCODER);
+        // SetDriveMode(Mode.RUN_WITH_ENCODER);
         SetDriveMode(Mode.RUN_WITHOUT_ENCODERS);
     }
 
@@ -291,10 +291,10 @@ public abstract class BaseOpMode extends LinearOpMode {
         telemetry.update();
 
         // make sure the imu gyro is calibrated before continuing.
-       // while (!isStopRequested() && !imu.isGyroCalibrated()) {
+        // while (!isStopRequested() && !imu.isGyroCalibrated()) {
         //    sleep(50);
         //    idle();
-       // }
+        // }
         telemetry.addData("IMU", "calibrated");
         telemetry.update();
     }
@@ -310,9 +310,9 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public double cmHorizAngleArm(double cm) { //ticks from horiz and angle arm coverted to cm
 
-        final double     COUNTS_PER_MOTOR_REV    = 384.5;    // eg: goBilda motor encoder
-        final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
-        final double     COUNTS_PER_CM  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
+        final double COUNTS_PER_MOTOR_REV = 384.5;    // eg: goBilda motor encoder
+        final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
+        final double COUNTS_PER_CM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
 
         return COUNTS_PER_CM * cm;
 
@@ -320,9 +320,9 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public double cmVertARm(double cm) { //ticks from vert arm coverted to cm
 
-        final double     COUNTS_PER_MOTOR_REV    = 537.7;    // eg: goBilda motor encoder
-        final double     DRIVE_GEAR_REDUCTION    = 1;     // This is < 1.0 if geared UP
-        final double     COUNTS_PER_INCH  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
+        final double COUNTS_PER_MOTOR_REV = 537.7;    // eg: goBilda motor encoder
+        final double DRIVE_GEAR_REDUCTION = 1;     // This is < 1.0 if geared UP
+        final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION);
 
         return COUNTS_PER_INCH * cm;
 
@@ -334,7 +334,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), posTarget);
-       // double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
+        // double ff = Math.cos(Math.toRadians(posTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + hF;
 
@@ -383,7 +383,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         horizController.setPID(hP, hI, hD);
         int horizArmPos = horizArm.getCurrentPosition();
         double pid = horizController.calculate((horizArmPos), horizArmPIDTarget);
-       // double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
+        // double ff = Math.cos(Math.toRadians(horizArmPIDTarget / horizArmTicksPerRev)) * hF;
 
         double horizArmPower = pid + hF;
 
@@ -442,6 +442,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         }
         return horizArmState;
     }
+
     public int vertArmMech(int vertArmState, int vertArmTarget, int ENCODER_ERROR_THRESHOLD) {
         if (vertArmState == VERT_ARM_EXTENDING) {
             if (Math.abs(vertArm.getCurrentPosition() - vertArmTarget) <= ENCODER_ERROR_THRESHOLD) {
@@ -520,39 +521,39 @@ public abstract class BaseOpMode extends LinearOpMode {
     */
 
     /**
-     *  Method to drive on a fixed compass bearing (angle), based on encoder counts.
-     *  Move will stop if either of these conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Driver stops the opmode running.
+     * Method to drive on a fixed compass bearing (angle), based on encoder counts.
+     * Move will stop if either of these conditions occur:
+     * 1) Move gets to the desired position
+     * 2) Driver stops the opmode running.
      *
-     * @param speed      Target speed for forward motion.  Should allow for _/- variance for adjusting heading
-     * @param distance   Distance (in inches) to move from current position.  Negative distance means move backwards.
-     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
-     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
+     * @param speed    Target speed for forward motion.  Should allow for _/- variance for adjusting heading
+     * @param distance Distance (in inches) to move from current position.  Negative distance means move backwards.
+     * @param angle    Absolute Angle (in Degrees) relative to last gyro reset.
+     *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *                 If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroDrive ( double speed,
-                            double distance,
-                            double angle) {
+    public void gyroDrive(double speed,
+                          double distance,
+                          double angle) {
 
-        int     FLTarget;
-        int     FRTarget;
-        int     RLTarget;
-        int     RRTarget;
-        int     moveCounts;
-        double  max;
-        double  error;
-        double  steer;
-        double  FLSpeed;
-        double  RLSpeed;
-        double  FRSpeed;
-        double  RRSpeed;
+        int FLTarget;
+        int FRTarget;
+        int RLTarget;
+        int RRTarget;
+        int moveCounts;
+        double max;
+        double error;
+        double steer;
+        double FLSpeed;
+        double RLSpeed;
+        double FRSpeed;
+        double RRSpeed;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            moveCounts = (int)(distance * COUNTS_PER_INCH);
+            moveCounts = (int) (distance * COUNTS_PER_INCH);
 
             FLTarget = frontLeft.getCurrentPosition() + moveCounts;
             RLTarget = rearLeft.getCurrentPosition() + moveCounts;
@@ -595,20 +596,19 @@ public abstract class BaseOpMode extends LinearOpMode {
                 FRSpeed = speed + steer;
                 RRSpeed = speed + steer;
 
-               // max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+                // max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
 
 
                 // Normalize speeds if either one exceeds +/- 1.0;
 
-               // max = Math.max(Math.abs(FLSpeed), Math.abs(FRSpeed), Math.max(Math.abs(RRSpeed), Math.abs(RLSpeed));
+                // max = Math.max(Math.abs(FLSpeed), Math.abs(FRSpeed), Math.max(Math.abs(RRSpeed), Math.abs(RLSpeed));
 
                 //max = Math.max(Math.abs(FLSpeed), (RLSpeed), (Math.abs(FRSpeed), (RRSpeed));
 
-               // max = Math.max(Math.abs(FLSpeed), Math.abs(FRSpeed));
+                // max = Math.max(Math.abs(FLSpeed), Math.abs(FRSpeed));
                 max = Math.max(Math.abs(RRSpeed), Math.abs(RLSpeed));
 
-                if (max > 1.0)
-                {
+                if (max > 1.0) {
                     FLSpeed /= max;
                     FRSpeed /= max;
                     RRSpeed /= max;
@@ -620,11 +620,11 @@ public abstract class BaseOpMode extends LinearOpMode {
                 rearRight.setPower(RRSpeed);
 
                 // Display drive status for the driver.
-                telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
-                telemetry.addData("Target",  "%7d:%7d",      FLTarget,  FRTarget, RLTarget, RRTarget);
-                telemetry.addData("Actual",  "%7d:%7d",      frontLeft.getCurrentPosition(),
+                telemetry.addData("Err/St", "%5.1f/%5.1f", error, steer);
+                telemetry.addData("Target", "%7d:%7d", FLTarget, FRTarget, RLTarget, RRTarget);
+                telemetry.addData("Actual", "%7d:%7d", frontLeft.getCurrentPosition(),
                         frontRight.getCurrentPosition());
-                telemetry.addData("Speed",   "%5.2f:%5.2f",  FLSpeed, FRSpeed, RLSpeed, RRSpeed);
+                telemetry.addData("Speed", "%5.2f:%5.2f", FLSpeed, FRSpeed, RLSpeed, RRSpeed);
                 telemetry.update();
             }
 
@@ -643,17 +643,17 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     /**
-     *  Method to spin on central axis to point in a new direction.
-     *  Move will stop if either of these conditions occur:
-     *  1) Move gets to the heading (angle)
-     *  2) Driver stops the opmode running.
+     * Method to spin on central axis to point in a new direction.
+     * Move will stop if either of these conditions occur:
+     * 1) Move gets to the heading (angle)
+     * 2) Driver stops the opmode running.
      *
      * @param speed Desired speed of turn.
-     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
-     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
+     * @param angle Absolute Angle (in Degrees) relative to last gyro reset.
+     *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *              If a relative angle is required, add/subtract from current heading.
      */
-    public void gyroTurn (  double speed, double angle) {
+    public void gyroTurn(double speed, double angle) {
 
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
@@ -663,16 +663,16 @@ public abstract class BaseOpMode extends LinearOpMode {
     }
 
     /**
-     *  Method to obtain & hold a heading for a finite amount of time
-     *  Move will stop once the requested time has elapsed
+     * Method to obtain & hold a heading for a finite amount of time
+     * Move will stop once the requested time has elapsed
      *
-     * @param speed      Desired speed of turn.
-     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
-     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
-     * @param holdTime   Length of time (in seconds) to hold the specified heading.
+     * @param speed    Desired speed of turn.
+     * @param angle    Absolute Angle (in Degrees) relative to last gyro reset.
+     *                 0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *                 If a relative angle is required, add/subtract from current heading.
+     * @param holdTime Length of time (in seconds) to hold the specified heading.
      */
-    public void gyroHold( double speed, double angle, double holdTime) {
+    public void gyroHold(double speed, double angle, double holdTime) {
 
         ElapsedTime holdTimer = new ElapsedTime();
 
@@ -694,38 +694,37 @@ public abstract class BaseOpMode extends LinearOpMode {
     /**
      * Perform one cycle of closed loop heading control.
      *
-     * @param speed     Desired speed of turn.
-     * @param angle     Absolute Angle (in Degrees) relative to last gyro reset.
-     *                  0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                  If a relative angle is required, add/subtract from current heading.
-     * @param PCoeff    Proportional Gain coefficient
+     * @param speed  Desired speed of turn.
+     * @param angle  Absolute Angle (in Degrees) relative to last gyro reset.
+     *               0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
+     *               If a relative angle is required, add/subtract from current heading.
+     * @param PCoeff Proportional Gain coefficient
      * @return
      */
     boolean onHeading(double speed, double angle, double PCoeff) {
-        double   error ;
-        double   steer ;
-        boolean  onTarget = false ;
-        double  FLSpeed;
-        double  RLSpeed;
-        double  FRSpeed;
-        double  RRSpeed;
+        double error;
+        double steer;
+        boolean onTarget = false;
+        double FLSpeed;
+        double RLSpeed;
+        double FRSpeed;
+        double RRSpeed;
         // determine turn power based on +/- error
         error = getError(angle);
 
         if (Math.abs(error) <= HEADING_THRESHOLD) {
             steer = 0.0;
-            FLSpeed  = 0.0;
+            FLSpeed = 0.0;
             RLSpeed = 0.0;
-            FRSpeed  = 0.0;
+            FRSpeed = 0.0;
             RRSpeed = 0.0;
             onTarget = true;
-        }
-        else {
+        } else {
             steer = getSteer(error, PCoeff);
             FRSpeed = speed * steer;
-            RRSpeed  = speed * steer;
+            RRSpeed = speed * steer;
             FLSpeed = -FRSpeed;
-            RLSpeed   = -RRSpeed;
+            RLSpeed = -RRSpeed;
 
         }
 
@@ -745,9 +744,10 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     /**
      * getError determines the error between the target angle and the robot's current heading
-     * @param   targetAngle  Desired angle (relative to global reference established at last Gyro Reset).
-     * @return  error angle: Degrees in the range +/- 180. Centered on the robot's frame of reference
-     *          +ve error means the robot should turn LEFT (CCW) to reduce error.
+     *
+     * @param targetAngle Desired angle (relative to global reference established at last Gyro Reset).
+     * @return error angle: Degrees in the range +/- 180. Centered on the robot's frame of reference
+     * +ve error means the robot should turn LEFT (CCW) to reduce error.
      */
     public double getError(double targetAngle) {
 
@@ -755,21 +755,21 @@ public abstract class BaseOpMode extends LinearOpMode {
 
         // calculate error in -179 to +180 range  (
         robotError = targetAngle - gyro.getIntegratedZValue();
-        while (robotError > 180)  robotError -= 360;
+        while (robotError > 180) robotError -= 360;
         while (robotError <= -180) robotError += 360;
         return robotError;
     }
 
     /**
      * returns desired steering force.  +/- 1 range.  +ve = steer left
-     * @param error   Error angle in robot relative degrees
-     * @param PCoeff  Proportional Gain Coefficient
+     *
+     * @param error  Error angle in robot relative degrees
+     * @param PCoeff Proportional Gain Coefficient
      * @return
      */
     public double getSteer(double error, double PCoeff) {
         return Range.clip(error * PCoeff, -1, 1);
     }
-
 
 
     public enum STRAFE {
@@ -782,15 +782,17 @@ public abstract class BaseOpMode extends LinearOpMode {
         RUN_WITH_ENCODER,
         RUN_WITHOUT_ENCODERS,
     }
+
     public enum Drive {
         STOP
     }
-    public enum Shoot{
+
+    public enum Shoot {
         SHOOT_FAR,
         GET_VELOCITY,
     }
 
-    public void DriveTrain (Drive Stop){
+    public void DriveTrain(Drive Stop) {
         if (Stop == Drive.STOP) {
             frontLeft.setPower(0);
             frontRight.setPower(0);
@@ -833,11 +835,11 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     }
 
-    public void getCenteredNavXValues(){
+    public void getCenteredNavXValues() {
 
         navx_centered = AHRS.getInstance(hardwareMap.get(NavxMicroNavigationSensor.class, "navx_centered"), AHRS.DeviceDataType.kProcessedData);
         boolean connected = navx_centered.isConnected();
-        telemetry.addData("1 navX-Device", connected ? "Connected" : "Disconnected" );
+        telemetry.addData("1 navX-Device", connected ? "Connected" : "Disconnected");
         String gyrocal, magcal, yaw, pitch, roll, compass_heading;
         String fused_heading, ypr, cf, motion;
         DecimalFormat df = new DecimalFormat("#.##");
@@ -851,22 +853,23 @@ public abstract class BaseOpMode extends LinearOpMode {
         telemetry.addData("Yaw, Pitch, Roll", ypr);
 
     }
+
     public void zeroGyro() {
-       // navx_centered.zeroYaw();
+        // navx_centered.zeroYaw();
         GetIMU();
     }
 
-    public void polebumper (double centimeters) {
+    public void polebumper(double centimeters) {
         while (RLdistance.getDistance(DistanceUnit.CM) > centimeters && RRdistance.getDistance(DistanceUnit.CM) > centimeters) {
             frontLeft.setPower(.1);
             rearLeft.setPower(.1);
             frontRight.setPower(.1);
             rearRight.setPower(.1);
         }
-            frontLeft.setPower(0);
-            rearLeft.setPower(0);
-            frontRight.setPower(0);
-            rearRight.setPower(0);
+        frontLeft.setPower(0);
+        rearLeft.setPower(0);
+        frontRight.setPower(0);
+        rearRight.setPower(0);
 
     }
 
@@ -878,6 +881,7 @@ public abstract class BaseOpMode extends LinearOpMode {
         vertArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         horizArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
     /*public void Conesensor(double centimeters) {
         while (FrontColor.getDistance(DistanceUnit.CM) > centimeters) {
             frontLeft.setPower(.1);
@@ -927,7 +931,7 @@ public abstract class BaseOpMode extends LinearOpMode {
                 transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
                 horizClaw.setPosition(HORIZONTAL_CLAW_HALF_CLOSE);
                 // wait(.1); //Don't be evil
-                horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetractFully , ENCODER_ERROR_THRESHOLD);
+                horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetractFully, ENCODER_ERROR_THRESHOLD);
                 if (horizArmState == HORIZ_ARM_RETRACTED) {
                     behaviorStep = 3;
                 }
@@ -956,10 +960,10 @@ public abstract class BaseOpMode extends LinearOpMode {
             //Move transferArm and wrist to front
             //Move vertArm to low pole/pickup level
             if (behaviorStep == 1) {  // ArmHigh - vArmPoleInsert seems to mess up going to pickup position
-               // vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-               // if (vertArmState == VERT_ARM_RETRACTED) {
-                  behaviorStep = 2;
-               // }
+                // vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                // if (vertArmState == VERT_ARM_RETRACTED) {
+                behaviorStep = 2;
+                // }
             }
             if (behaviorStep == 2) {
                 transferClaw.setPosition(TRANSFER_CLAW_OPEN);
@@ -992,7 +996,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
             if (horizArmState == HORIZ_ARM_EXTENDED) {
                 behavior = BEHAVIOR_FINISHED;
-               // behaviorStep = 1;
+                // behaviorStep = 1;
             }
 
         }
@@ -1001,7 +1005,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
             if (horizArmState == HORIZ_ARM_RETRACTED) {
                 behavior = BEHAVIOR_FINISHED;
-              //  behaviorStep = 1;
+                //  behaviorStep = 1;
             }
         }
 
@@ -1010,7 +1014,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
             if (vertArmState == VERT_ARM_EXTENDED) {
                 behavior = BEHAVIOR_FINISHED;
-              //  behaviorStep = 1;
+                //  behaviorStep = 1;
             }
         }
 
@@ -1018,7 +1022,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmPickup, ENCODER_ERROR_THRESHOLD);
             if (vertArmState == VERT_ARM_EXTENDED) {
                 behavior = BEHAVIOR_FINISHED;
-             //   behaviorStep = 1;
+                //   behaviorStep = 1;
             }
         }
 
@@ -1136,13 +1140,53 @@ public abstract class BaseOpMode extends LinearOpMode {
                 }
             }
         }
-
         if (behavior == BEHAVIOR_GET_CONE5) {
+            if (behaviorStep == 1) {
+                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone5, ENCODER_ERROR_THRESHOLD);
+                if (runtime.milliseconds() - timer >= WAIT_FOR_ARM)
+                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
+                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
+                    timer = runtime.milliseconds();
+                    behaviorStep = 2;
+
+                    if (behaviorStep == 2) {
+                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                        //Don't be evil
+                            behaviorStep = 3;
+                        }
+
+                    }
+                    if (behaviorStep == 3) {
+                        angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmabovestack, ENCODER_ERROR_THRESHOLD);
+                        if (angleArmState == ANGLE_ARM_EXTENDED) {
+                            behaviorStep = 4;
+                        }
+                    }
+                    if (behaviorStep == 4) {
+                        horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
+                        if (horizArmState == HORIZ_ARM_RETRACTED) {
+                            behaviorStep = 5;
+                        }
+                    }
+                    if (behaviorStep == 5) {
+                        angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeGround, ENCODER_ERROR_THRESHOLD);
+                        if (angleArmState == ANGLE_ARM_EXTENDED) {
+                            behaviorStep = 6;
+                        }
+                    }
+                    if (behaviorStep == 6) {
+                        //horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                        behavior = BEHAVIOR_FINISHED;
+                        behaviorStep = 1;
+                    }
+                }
+       /* if (behavior == BEHAVIOR_GET_CONE5) {
             if (behaviorStep == 1) {
                 horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
                 angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone5, ENCODER_ERROR_THRESHOLD);
                 if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
                     horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
+                    timer = runtime.milliseconds();
                     behaviorStep = 2;
                 }
             }
@@ -1153,14 +1197,15 @@ public abstract class BaseOpMode extends LinearOpMode {
                     angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
                     if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
                         horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                        behavior = BEHAVIOR_FINISHED;
-                        behaviorStep = 1;
-                    }
+                        if (runtime.milliseconds() - timer >= WAIT_FOR_CLAW) {
+                            behavior = BEHAVIOR_FINISHED;
+                             behaviorStep = 1;*/
                 }
             }
         }
-    }
-}
+
+
+
 
 
 
