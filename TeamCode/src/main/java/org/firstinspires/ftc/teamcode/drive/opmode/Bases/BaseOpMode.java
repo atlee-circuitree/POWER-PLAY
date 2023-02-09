@@ -111,7 +111,8 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public static int vArmPickup = 184;    //184
 
-
+    public int autoBehavior;
+    public int autoBehaviorStep = 1;
     public int behavior;
     public static int behaviorStep = 1;
     public int vArmTarget = 0;
@@ -1069,7 +1070,6 @@ public abstract class BaseOpMode extends LinearOpMode {
             }
         }
 
-
         if (behavior == BEHAVIOR_GET_CONE2) {
             if (behaviorStep == 1) {
                 horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
@@ -1079,7 +1079,6 @@ public abstract class BaseOpMode extends LinearOpMode {
                     behaviorStep = 2;
                 }
             }
-
             if (behaviorStep == 2) {
                 angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
                 if (angleArmState == ANGLE_ARM_EXTENDED) {
@@ -1106,13 +1105,7 @@ public abstract class BaseOpMode extends LinearOpMode {
             if (behaviorStep == 2) {
                 angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmConeLift, ENCODER_ERROR_THRESHOLD);
                 if (angleArmState == ANGLE_ARM_EXTENDED) {
-                    horizArmState = horizArmMech(HORIZ_ARM_RETRACTING, hArmRetract, ENCODER_ERROR_THRESHOLD);
-                    angleArmState = angleArmMech(ANGLE_ARM_RETRACTING, aArmConeFlat, ENCODER_ERROR_THRESHOLD);
-                    if (horizArmState == HORIZ_ARM_RETRACTED && angleArmState == ANGLE_ARM_RETRACTED) {
-                        horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
-                        behavior = BEHAVIOR_FINISHED;
-                        behaviorStep = 1;
-                    }
+                    behaviorStep = 6;
                 }
             }
         }
@@ -1140,14 +1133,6 @@ public abstract class BaseOpMode extends LinearOpMode {
                 }
             }
         }
-        if (behavior == BEHAVIOR_GET_CONE5) {
-            if (behaviorStep == 1) {
-                angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone5, ENCODER_ERROR_THRESHOLD);
-                if (runtime.milliseconds() - timer >= WAIT_FOR_ARM)
-                horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
-                if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                    timer = runtime.milliseconds();
-                    behaviorStep = 2;
 
                     if (behaviorStep == 2) {
                         horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
@@ -1185,7 +1170,6 @@ public abstract class BaseOpMode extends LinearOpMode {
                 horizArmState = horizArmMech(HORIZ_ARM_EXTENDING, hArmExtend, ENCODER_ERROR_THRESHOLD);
                 angleArmState = angleArmMech(ANGLE_ARM_EXTENDING, aArmCone5, ENCODER_ERROR_THRESHOLD);
                 if (horizArmState == HORIZ_ARM_EXTENDED && angleArmState == ANGLE_ARM_EXTENDED) {
-                    horizClaw.setPosition(HORIZONTAL_CLAW_CLOSE);
                     timer = runtime.milliseconds();
                     behaviorStep = 2;
                 }
