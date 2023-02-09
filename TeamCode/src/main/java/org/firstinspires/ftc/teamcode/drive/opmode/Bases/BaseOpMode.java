@@ -105,8 +105,8 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public static double WAIT_FOR_CLAW = 1000;
     public static double WAIT_FOR_ARM = 1000;
-    public static int vArmHigh = 3365;
-    public static int vArmMid = 2700;
+    public static int vArmHigh = 2635;
+    public static int vArmMid = 2400;
     public static int vArmLow = 2186;
     // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
@@ -145,6 +145,8 @@ public abstract class BaseOpMode extends LinearOpMode {
     public static int transferArmTopState = 2;
     public static int transferArmBottomState = 3;
 
+    public static int VERT_ARM_CONE = 21;
+    public static int AUTO_BEHAVIOR_FINISHED = 20;
     public static int BEHAVIOR_FINISHED = 0;
     public static int BEHAVIOR_EXTEND_HORIZ_ARM_TO_MAX = 1;
     public static int BEHAVIOR_RETRACT_HORIZ_ARM_TO_MAX = 2;
@@ -1317,8 +1319,43 @@ public abstract class BaseOpMode extends LinearOpMode {
                 }
             }
         }
+        if (behavior == VERT_ARM_CONE) {
+            if (behaviorStep == 1) {
+                transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                if (vertArmState == VERT_ARM_EXTENDED) {
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmMid, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTING) {
+                    transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    if (vertArmState == VERT_ARM_RETRACTING && transferClawState == TRANSFER_CLAW_OPEN) {
+                        behaviorStep = 3;
+                    }
+                }
+
+            }
+            if (behaviorStep == 3) {
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                if (transferArmTopState == TRANSFER_ARM_TOP_FRONT && transferArmBottomState == TRANSFER_ARM_BOTTOM_FRONT) {
+                    behaviorStep = 4;
+                }
+            }
+            if (behaviorStep == 4) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTED, vArmPickup, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    behavior = BEHAVIOR_FINISHED;
+                }
+            }
+        }
     }
 }
+
 
 
 

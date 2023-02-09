@@ -372,6 +372,9 @@ public class TeleOP_2022_2023 extends BaseOpMode {
                 if (gamepad1.b) {
                     behavior = BEHAVIOR_GET_CONE5;
                 }
+                if (gamepad2.dpad_up) {
+                    behavior = VERT_ARM_CONE;
+                }
 
                 /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD && vertArm.getCurrentPosition() <= vArmMax) {
                         vertArm.setPower(gamepad2.right_trigger);
