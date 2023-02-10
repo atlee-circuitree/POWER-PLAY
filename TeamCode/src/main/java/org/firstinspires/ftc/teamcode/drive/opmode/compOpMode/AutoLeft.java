@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class AutoLeft extends BaseOpMode {
     public static boolean autonomousInitialized = true;   // This variable persists between OP Modes and will tell Teleop mode it is running after Autonomous
     public static double autoTimer;
-    public static double AUTO_END_TIME = 5;
+    //public static double AUTO_END_TIME = 5;
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -188,18 +188,47 @@ public class AutoLeft extends BaseOpMode {
                     .strafeLeft(Side * 3.75)
                     .forward(6)
                     .back(4)
+                    .addDisplacementMarker(this::vertArmAuto)
                     .build();
             drive.followTrajectorySequence(trajStart);
 
 
-        while (isStarted() && !isStopRequested() && (30 - runtime.seconds() >= AUTO_END_TIME)) {
+        /*while (isStarted() && !isStopRequested() && (30 - runtime.seconds() >= AUTO_END_TIME)) {
             //put arm movements here
-            autoBehavior = BEHAVIOR_AUTO;
             checkBehaviors();
-        }
+            if (behaviorStep == 1) {
+                transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                if (vertArmState == VERT_ARM_EXTENDED) {
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmMid, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    behaviorStep = 3;
+                }
+            }
+            if (behaviorStep == 3) {
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                if (transferArmTopState == TRANSFER_ARM_TOP_FRONT && transferArmBottomState == TRANSFER_ARM_BOTTOM_FRONT) {
+                    behaviorStep = 4;
+                }
+            }
+            if (behaviorStep == 4) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmLow, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    behavior = BEHAVIOR_FINISHED;
+                }
+            };
+        }*/
 
 
-/*
+
         if ((Side == Left && SelectedLane == Lane1) || (Side == Right && SelectedLane == Lane3)) {
         TrajectorySequence traj1 = drive.trajectorySequenceBuilder(trajStart.end())
                 //.lineTo(new Vector2d(Side * 67, 16)) went too far and hit 5 stack cones'
@@ -237,7 +266,7 @@ public class AutoLeft extends BaseOpMode {
 
             drive.followTrajectorySequence(traj3);
         }
-*/
+
     }
     void tagToTelemetry(AprilTagDetection detection)
     {

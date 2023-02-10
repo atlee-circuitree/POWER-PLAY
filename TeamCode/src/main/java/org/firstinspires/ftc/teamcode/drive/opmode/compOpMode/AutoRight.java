@@ -178,6 +178,7 @@ public class AutoRight extends BaseOpMode {
                     .lineToSplineHeading(new Pose2d(Side * 33, 4, Math.toRadians(270 - (75 * Side))))
                     .strafeLeft(Side * 3.75)
                     .forward(6)
+                    .addDisplacementMarker(this::vertArmAuto)
                     .back(4)
                     .build();
             drive.followTrajectorySequence(trajStart);

@@ -25,9 +25,12 @@ public class MeepMeepTesting {
                                 .strafeLeft(Side * 3.75)
                                 .forward(6)
                                 .back(4)
-                                .lineTo(new Vector2d(Side * 57, 10))
+
+                                //.lineTo(new Vector2d(Side * 57, 10))
                                 .build()
                 );
+
+
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)
                 .setDarkMode(true)

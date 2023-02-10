@@ -166,6 +166,8 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public int coneStackHeight = 5;
 
+    public static double AUTO_END_TIME = 5;
+
     public static double TRIGGER_THRESHOLD = 0;
 
     public static double HORIZONTAL_CLAW_OPEN = .56;
@@ -1352,6 +1354,41 @@ public abstract class BaseOpMode extends LinearOpMode {
                     behavior = BEHAVIOR_FINISHED;
                 }
             }
+        }
+    }
+    public void vertArmAuto() {
+        while (isStarted() && !isStopRequested() && (30 - runtime.seconds() >= AUTO_END_TIME)) {
+            //put arm movements here
+            checkBehaviors();
+            if (behaviorStep == 1) {
+                transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                if (vertArmState == VERT_ARM_EXTENDED) {
+                    behaviorStep = 2;
+                }
+            }
+            if (behaviorStep == 2) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmMid, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    transferClaw.setPosition(TRANSFER_CLAW_OPEN);
+                    behaviorStep = 3;
+                }
+            }
+            if (behaviorStep == 3) {
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_FRONT);
+                if (transferArmTopState == TRANSFER_ARM_TOP_FRONT && transferArmBottomState == TRANSFER_ARM_BOTTOM_FRONT) {
+                    behaviorStep = 4;
+                }
+            }
+            if (behaviorStep == 4) {
+                vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmLow, ENCODER_ERROR_THRESHOLD);
+                if (vertArmState == VERT_ARM_RETRACTED) {
+                    behavior = BEHAVIOR_FINISHED;
+                }
+            };
         }
     }
 }
