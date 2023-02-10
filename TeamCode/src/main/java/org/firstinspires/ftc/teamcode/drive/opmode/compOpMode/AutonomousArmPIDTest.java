@@ -18,12 +18,12 @@ public class AutonomousArmPIDTest extends BaseOpMode {
 
 
         while (opModeIsActive()) {
-                if (behaviorStep == 1) {
-                    transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
-                    vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
-                    transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
-                    transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
-                    if (vertArmState == VERT_ARM_EXTENDED) {
+            if (behaviorStep == 1) {
+                transferClaw.setPosition(TRANSFER_CLAW_CLOSE);
+                vertArmState = vertArmMech(VERT_ARM_EXTENDING, vArmHigh, ENCODER_ERROR_THRESHOLD);
+                transferArmBotttom.setPosition(TRANSFER_ARM_BOTTOM_BACK);
+                transferArmTop.setPosition(TRANSFER_ARM_TOP_BACK);
+                if (vertArmState == VERT_ARM_EXTENDED) {
                         behaviorStep = 2;
                     }
                 }
@@ -35,7 +35,6 @@ public class AutonomousArmPIDTest extends BaseOpMode {
                             behaviorStep = 3;
                         }
                     }
-
                 }
                 if (behaviorStep == 3) {
                     transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
@@ -53,6 +52,7 @@ public class AutonomousArmPIDTest extends BaseOpMode {
             }
         }
     }
+
 
 
 
