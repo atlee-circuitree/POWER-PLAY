@@ -29,12 +29,10 @@ public class AutonomousArmPIDTest extends BaseOpMode {
                 }
                 if (behaviorStep == 2) {
                     vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmMid, ENCODER_ERROR_THRESHOLD);
-                    if (vertArmState == VERT_ARM_RETRACTING) {
+                    if (vertArmState == VERT_ARM_RETRACTED) {
                         transferClaw.setPosition(TRANSFER_CLAW_OPEN);
-                        if (vertArmState == VERT_ARM_RETRACTING && transferClawState == TRANSFER_CLAW_OPEN) {
                             behaviorStep = 3;
                         }
-                    }
                 }
                 if (behaviorStep == 3) {
                     transferArmTop.setPosition(TRANSFER_ARM_TOP_FRONT);
@@ -44,7 +42,7 @@ public class AutonomousArmPIDTest extends BaseOpMode {
                     }
                 }
                 if (behaviorStep == 4) {
-                    vertArmState = vertArmMech(VERT_ARM_RETRACTED, vArmPickup, ENCODER_ERROR_THRESHOLD);
+                    vertArmState = vertArmMech(VERT_ARM_RETRACTING, vArmLow, ENCODER_ERROR_THRESHOLD);
                     if (vertArmState == VERT_ARM_RETRACTED) {
                         behavior = BEHAVIOR_FINISHED;
                     }

@@ -105,9 +105,9 @@ public abstract class BaseOpMode extends LinearOpMode {
 
     public static double WAIT_FOR_CLAW = 1000;
     public static double WAIT_FOR_ARM = 1000;
-    public static int vArmHigh = 2635;
-    public static int vArmMid = 2400;
-    public static int vArmLow = 2186;
+    public static int vArmHigh = 3200;//2635
+    public static int vArmMid = 2800;//2400
+    public static int vArmLow = 2600;//2300
     // public static int vArmPickup = 378;
     public static int vArmPoleInsert = 100;
     public static int vArmPoleSafe = 4123;
